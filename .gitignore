@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Playwright
+e2e/test-results/
+e2e/playwright-report/
+frontend/design/.og-image.raw.png
