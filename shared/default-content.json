@@ -1,0 +1,169 @@
+{
+  "profile": {
+    "name": "Shuvo Kumar Das",
+    "role": "Sr. Software Engineer",
+    "headline": "Sr. Software Engineer & AI Engineer",
+    "email": "iamshuvokd@gmail.com",
+    "phone": "01831839121",
+    "location": "Bangladesh",
+    "timeZone": "Asia/Dhaka",
+    "cvUrl": "https://drive.google.com/uc?export=download&id=1Mr5IU8XihVUr4KgWu-_x7EEc9R4vUIPE",
+    "photoUrl": "",
+    "available": true,
+    "availabilityTitle": "Open for select projects",
+    "availabilityText": "AI, automation, analytics, and full-stack product development.",
+    "social": {
+      "github": "https://github.com/iamshuvokd",
+      "linkedin": "https://www.linkedin.com/in/iamshuvokd/",
+      "facebook": "https://www.facebook.com/iamshuvokd/"
+    }
+  },
+  "hero": {
+    "badge": "Sr. Software Engineer & AI Engineer",
+    "greeting": "Hi, I'm",
+    "firstName": "Shuvo",
+    "roles": ["Sr. Software Engineer", "AI Engineer", "Automation Specialist", "Full-Stack Developer"],
+    "tagline": "Building intelligent digital experiences through AI, automation, analytics, and scalable software engineering.",
+    "metrics": [
+      { "value": "5+", "label": "Years building systems" },
+      { "value": "20+", "label": "AI & automation projects" },
+      { "value": "70%", "label": "Response-time reduction" }
+    ]
+  },
+  "about": {
+    "heading": "Building practical software with AI, automation, and clean product experience.",
+    "paragraph": "I am a Sr. Software Engineer focused on full-stack development, business automation, AI-enabled workflows, and analytics products. I turn complex operations into clear systems that teams can use, maintain, and scale.",
+    "cardSummary": "Product-minded engineering for AI, automation, dashboards, and scalable web applications.",
+    "quickFacts": [
+      { "label": "Experience", "value": "5+ Years" },
+      { "label": "Role", "value": "Sr. Software Engineer" },
+      { "label": "Focus", "value": "AI + Automation" }
+    ],
+    "focusAreas": [
+      { "icon": "Code2", "title": "Software Systems", "text": "Full-stack apps, APIs, and maintainable architecture." },
+      { "icon": "Workflow", "title": "Automation", "text": "Power Apps, process flows, and business operations." },
+      { "icon": "Brain", "title": "AI Products", "text": "Applied AI features, assistants, and workflow intelligence." },
+      { "icon": "LineChart", "title": "Analytics", "text": "Dashboards, reporting, and decision-ready data views." }
+    ]
+  },
+  "experience": {
+    "items": [
+      {
+        "period": "2025 - Present",
+        "role": "Sr. Software Engineer",
+        "company": "Apptriangle Limited",
+        "category": "AI, Data & Product Engineering",
+        "status": "Current",
+        "summary": "Designing scalable software systems, AI-enabled workflows, analytics products, and automation solutions for real business operations."
+      },
+      {
+        "period": "2023 - 2024",
+        "role": "Power Platform Specialist",
+        "company": "Apptriangle Limited",
+        "category": "Automation & Business Applications",
+        "status": "Specialized",
+        "summary": "Delivered Power Apps, Power Automate workflows, and Power BI dashboards that streamlined processes and improved operational visibility."
+      },
+      {
+        "period": "2023",
+        "role": "Intern - Software Developer",
+        "company": "BJIT",
+        "category": "Software Engineering Foundation",
+        "status": "Foundation",
+        "summary": "Built practical experience in software development, debugging, collaborative engineering workflows, and professional delivery practices."
+      }
+    ],
+    "highlights": [
+      { "label": "Timeline", "value": "2023 - Present" },
+      { "label": "Current Role", "value": "Sr. Software Engineer" },
+      { "label": "Core Track", "value": "AI + Automation" }
+    ]
+  },
+  "projects": {
+    "items": [
+      {
+        "title": "AI Chatbot for Apptriangle Limited",
+        "category": "AI Product",
+        "icon": "Bot",
+        "impact": "Reduced response time by 70%",
+        "description": "NLP-powered assistant for medical queries and appointment workflows, built with a production-minded API and frontend experience.",
+        "tech": ["Python", "TensorFlow", "React", "FastAPI"],
+        "github": "https://github.com/shuvookd/ATL_Bot",
+        "demo": "https://github.com/shuvookd/ATL_Bot"
+      },
+      {
+        "title": "Guest Management Solution",
+        "category": "Business Automation",
+        "icon": "Workflow",
+        "impact": "Digitized guest entry and notifications",
+        "description": "Power Apps based guest management system with QR scanning, host notifications, meeting records, and reporting support.",
+        "tech": ["Power Apps", "Power Automate", "Power BI"],
+        "github": "https://github.com/iamshuvokd/Guest_Management_System",
+        "demo": "https://github.com/iamshuvokd/Guest_Management_System?tab=readme-ov-file#guest-management-system"
+      },
+      {
+        "title": "Parts Management Solution",
+        "category": "Operations Platform",
+        "icon": "Layers3",
+        "impact": "Improved operational tracking",
+        "description": "Low-code inventory and parts workflow solution for structured requests, approvals, visibility, and management reporting.",
+        "tech": ["Power Apps", "Power Automate", "Power BI"],
+        "github": "https://github.com/iamshuvokd/Parts_Management_System",
+        "demo": "https://github.com/iamshuvokd/Parts_Management_System?tab=readme-ov-file#-parts-management-system"
+      },
+      {
+        "title": "Medicare",
+        "category": "Healthcare Platform",
+        "icon": "MonitorCheck",
+        "impact": "Patient-focused digital care",
+        "description": "Healthcare innovation project combining service accessibility, health monitoring concepts, and data-backed patient workflows.",
+        "tech": ["React JS", "Node.js", "Express", "MongoDB"],
+        "github": "https://github.com/iamshuvokd/mediCare",
+        "demo": "https://github.com/iamshuvokd/mediCare"
+      }
+    ],
+    "stats": [
+      { "label": "Project Focus", "value": "AI + Automation" },
+      { "label": "Delivery Style", "value": "Product-first" },
+      { "label": "Business Value", "value": "Workflow impact" }
+    ]
+  },
+  "skills": {
+    "groups": [
+      {
+        "title": "Software Engineering",
+        "icon": "Code2",
+        "level": "Advanced",
+        "summary": "Full-stack application development with production-focused architecture and maintainable delivery.",
+        "skills": ["React", "Node.js", "FastAPI", "Django", "JavaScript", "Python"]
+      },
+      {
+        "title": "AI & Machine Learning",
+        "icon": "Brain",
+        "level": "Applied",
+        "summary": "Practical AI systems for NLP, automation, model workflows, and intelligent product features.",
+        "skills": ["TensorFlow", "PyTorch", "Scikit-learn", "NLP", "LangChain", "GPT"]
+      },
+      {
+        "title": "Power Platform",
+        "icon": "Workflow",
+        "level": "Specialist",
+        "summary": "Business process automation, low-code applications, dashboards, and workflow modernization.",
+        "skills": ["Power Apps", "Power Automate", "Power BI", "Dataverse", "SharePoint", "Excel"]
+      },
+      {
+        "title": "Data & Analytics",
+        "icon": "LineChart",
+        "level": "Strong",
+        "summary": "Data analysis, reporting, visualization, and operational insight generation for business teams.",
+        "skills": ["Power BI", "Tableau", "Python", "Data Analysis", "Visualization", "Reporting"]
+      }
+    ],
+    "stack": [
+      { "label": "Languages", "items": ["Python", "JavaScript", "Java", "C", "C++"] },
+      { "label": "Frameworks", "items": ["React", "Node.js", "Express", "FastAPI", "Django"] },
+      { "label": "Databases", "items": ["MongoDB", "PostgreSQL", "MySQL", "Redis"] },
+      { "label": "Cloud & Tools", "items": ["Azure", "AWS", "Git", "Power Platform"] }
+    ]
+  }
+}
