@@ -77,25 +77,32 @@ const Projects = () => {
                     ))}
                   </div>
 
-                  <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-lg border-border/80 bg-background/35 text-muted-foreground hover:border-primary/50 hover:text-primary"
-                      onClick={() => project.github && window.open(assetUrl(project.github), '_blank', 'noopener,noreferrer')}
-                    >
-                      <Github className="h-4 w-4" />
-                      Code
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="rounded-lg"
-                      onClick={() => project.demo && window.open(assetUrl(project.demo), '_blank', 'noopener,noreferrer')}
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      View Project
-                    </Button>
-                  </div>
+                  {(project.github || project.demo) && (
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                      {/* A button only exists when its link does, so an emptied link never leaves a dead button. */}
+                      {project.github && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-lg border-border/80 bg-background/35 text-muted-foreground hover:border-primary/50 hover:text-primary"
+                          onClick={() => window.open(assetUrl(project.github), '_blank', 'noopener,noreferrer')}
+                        >
+                          <Github className="h-4 w-4" />
+                          Code
+                        </Button>
+                      )}
+                      {project.demo && (
+                        <Button
+                          size="sm"
+                          className="rounded-lg"
+                          onClick={() => window.open(assetUrl(project.demo), '_blank', 'noopener,noreferrer')}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          View Project
+                        </Button>
+                      )}
+                    </div>
+                  )}
 
                   <ArrowUpRight className="absolute bottom-5 right-5 h-5 w-5 text-primary/30 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary" />
                 </article>

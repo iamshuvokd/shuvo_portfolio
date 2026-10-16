@@ -126,6 +126,24 @@ test.describe('Admin: live editing', () => {
     await expect(site.locator('#projects article', { hasText: 'Playwright Test Project' })).toHaveCount(0);
   });
 
+  test('clearing a project link removes its button instead of leaving a dead one', async ({ page, context }) => {
+    const site = await context.newPage();
+    await site.goto('/');
+    const card = site.locator('#projects article', { hasText: 'AI Chatbot' });
+    await expect(card.getByRole('button', { name: 'Code' })).toHaveCount(1);
+
+    await page.goto('/admin');
+    await page.bringToFront();
+    await openTab(page, 'Projects');
+    await page.getByLabel('Code link (GitHub)').first().fill('');
+    await page.getByLabel('Project / demo link').first().fill('');
+    await publish(page);
+
+    await expect(card.getByRole('button', { name: 'Code' })).toHaveCount(0);
+    await expect(card.getByRole('button', { name: 'View Project' })).toHaveCount(0);
+    await expect(card).toContainText('AI Chatbot'); // the project itself stays
+  });
+
   test('reordering projects changes the order on the site', async ({ page, context }) => {
     const site = await context.newPage();
     await site.goto('/');
