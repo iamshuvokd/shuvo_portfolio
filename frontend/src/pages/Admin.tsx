@@ -6,6 +6,8 @@ import { adminApi, getToken } from '@/services/admin.service';
 
 const Admin = () => {
   const [signedIn, setSignedIn] = useState(() => Boolean(getToken()));
+  /** True when the token expired mid-session: show a login overlay but keep the editor (and the draft) alive. */
+  const [expired, setExpired] = useState(false);
 
   // The admin area must never be indexed or cached by crawlers.
   useEffect(() => {
@@ -24,7 +26,10 @@ const Admin = () => {
   const logout = useCallback(() => {
     void adminApi.logout(); // revoke on the server; the UI does not wait for it
     setSignedIn(false);
+    setExpired(false);
   }, []);
+
+  const sessionExpired = useCallback(() => setExpired(true), []);
 
   if (!env.apiUrl) {
     return (
@@ -40,7 +45,14 @@ const Admin = () => {
     );
   }
 
-  return signedIn ? <AdminDashboard onLogout={logout} /> : <AdminLogin onSuccess={() => setSignedIn(true)} />;
+  if (!signedIn) return <AdminLogin onSuccess={() => setSignedIn(true)} />;
+
+  return (
+    <>
+      <AdminDashboard onLogout={logout} onSessionExpired={sessionExpired} />
+      {expired && <AdminLogin expired onSuccess={() => setExpired(false)} />}
+    </>
+  );
 };
 
 export default Admin;

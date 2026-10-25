@@ -24,7 +24,7 @@ const tabs = [
   ['json', 'JSON'],
 ] as const;
 
-const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
+const AdminDashboard = ({ onLogout, onSessionExpired }: { onLogout: () => void; onSessionExpired: () => void }) => {
   const { toast } = useToast();
   const [draft, setDraft] = useState<SiteContent | null>(null);
   const [savedJson, setSavedJson] = useState('');
@@ -36,12 +36,12 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const handleError = useCallback(
     (error: unknown, title: string) => {
       if (error instanceof ApiError && error.status === 401) {
-        onLogout();
+        onSessionExpired(); // keep the draft; the page shows a sign-in overlay on top of it
         return;
       }
       toast({ title, description: error instanceof Error ? error.message : 'Unknown error', variant: 'destructive' });
     },
-    [onLogout, toast],
+    [onSessionExpired, toast],
   );
 
   useEffect(() => {

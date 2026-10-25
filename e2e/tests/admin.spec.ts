@@ -461,3 +461,36 @@ test.describe('B19: deleting files the live site uses', () => {
     expect(messages[1]).toContain('used on the live site');
   });
 });
+
+test.describe('B5: an expired session never throws away unsaved work', () => {
+  test('shows a sign-in overlay over the editor, keeps the draft, and saves after signing back in', async ({ page, signIn, api }) => {
+    await signIn(page);
+    await page.goto('/admin');
+    await openTab(page, 'Hero');
+    const text = `Written before the session expired ${Date.now()}`;
+    await page.getByLabel('Tagline').fill(text);
+
+    // The 12-hour token expires while the admin is still typing.
+    await page.evaluate((key) => sessionStorage.setItem(key, 'expired.token.value'), TOKEN_KEY);
+    await page.getByRole('button', { name: /Save & publish/ }).click();
+
+    const overlay = page.getByRole('dialog', { name: 'Session expired' });
+    await expect(overlay).toBeVisible();
+    await expect(overlay).toContainText('unsaved changes are kept');
+    expect((await api.publicContent()).hero.tagline).not.toBe(text); // nothing was published with a dead token
+
+    // Wrong password keeps the overlay; the right one dismisses it.
+    await overlay.getByLabel('Password').fill('wrong-password');
+    await overlay.getByRole('button', { name: 'Sign in' }).click();
+    await expect(overlay.getByRole('alert')).toHaveText('Incorrect password');
+    await overlay.getByLabel('Password').fill(ADMIN_PASSWORD);
+    await overlay.getByRole('button', { name: 'Sign in' }).click();
+    await expect(overlay).toHaveCount(0);
+
+    // The draft is exactly as it was, still marked unsaved, and can now be published.
+    await expect(page.getByLabel('Tagline')).toHaveValue(text);
+    await expect(page.getByText('Unsaved changes')).toBeVisible();
+    await publish(page);
+    expect((await api.publicContent()).hero.tagline).toBe(text);
+  });
+});
