@@ -29,8 +29,10 @@ const AdminLogin = ({ onSuccess, expired = false }: AdminLoginProps) => {
     }
   };
 
+  const Wrapper = expired ? 'div' : 'main';
+
   return (
-    <div
+    <Wrapper
       className={
         expired
           ? 'fixed inset-0 z-50 flex items-center justify-center bg-background/85 px-4 backdrop-blur-sm'
@@ -72,7 +74,7 @@ const AdminLogin = ({ onSuccess, expired = false }: AdminLoginProps) => {
           Sign in
         </Button>
       </form>
-    </div>
+    </Wrapper>
   );
 };
 

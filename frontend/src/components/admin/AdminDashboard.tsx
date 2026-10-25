@@ -155,7 +155,7 @@ const AdminDashboard = ({ onLogout, onSessionExpired }: { onLogout: () => void; 
   const set = <K extends keyof SiteContent>(key: K) => (value: SiteContent[K]) => setDraft({ ...draft, [key]: value });
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-24 pt-6 sm:px-6">
+    <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 sm:px-6">
       <header className="sticky top-0 z-30 -mx-4 mb-6 border-b border-border/70 bg-background/85 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -228,7 +228,7 @@ const AdminDashboard = ({ onLogout, onSessionExpired }: { onLogout: () => void; 
           <JsonPanel content={draft} onApply={setDraft} />
         </TabsContent>
       </Tabs>
-    </div>
+    </main>
   );
 };
 

@@ -15,11 +15,17 @@ const Index = () => {
   return (
     <MotionConfig reducedMotion="user">
     <div className="min-h-screen relative">
+      <a
+        href="#main-content"
+        className="sr-only z-[70] rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Skip to content
+      </a>
       <ScrollProgress />
       <AnimatedBackground />
       <div className="relative z-10">
         <ErrorBoundary name="header"><Header /></ErrorBoundary>
-        <main>
+        <main id="main-content" tabIndex={-1} className="outline-none">
           <ErrorBoundary name="hero"><Hero /></ErrorBoundary>
           <ErrorBoundary name="about"><About /></ErrorBoundary>
           <ErrorBoundary name="experience"><Experience /></ErrorBoundary>

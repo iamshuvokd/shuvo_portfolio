@@ -76,7 +76,7 @@ const Header = () => {
           >
             <img
               src={photo}
-              alt={content.profile.name}
+              alt="" // decorative: the name is printed right beside it
               className="h-9 w-9 shrink-0 rounded-lg border border-primary/20 object-cover"
             />
             <span className="truncate">{content.profile.name}</span>

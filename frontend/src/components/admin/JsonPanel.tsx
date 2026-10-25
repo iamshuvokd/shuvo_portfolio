@@ -28,7 +28,7 @@ const JsonPanel = ({ content, onApply }: { content: SiteContent; onApply: (conte
 
   return (
     <Panel title="Raw JSON" description="Edit everything at once. Click Apply to load it into the form, then Save & publish. The server re-validates before publishing.">
-      <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={24} spellCheck={false} className="font-mono text-xs" />
+      <Textarea aria-label="Site content as JSON" value={text} onChange={(e) => setText(e.target.value)} rows={24} spellCheck={false} className="font-mono text-xs" />
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="button" onClick={apply}>
         Apply to form
