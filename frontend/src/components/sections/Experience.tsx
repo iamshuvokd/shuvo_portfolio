@@ -16,12 +16,12 @@ const Experience = () => {
       <div className="container relative z-10 mx-auto max-w-7xl overflow-hidden">
         <div className="grid gap-8 lg:grid-cols-[0.82fr_1.28fr] lg:gap-12">
           <Reveal className="lg:sticky lg:top-28 lg:self-start">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-primary">Career Timeline</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-primary">{content.experience.eyebrow}</p>
             <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              Professional Journey
+              {content.experience.title}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-              A focused path through software engineering, business automation, AI systems, and data-driven product delivery.
+              {content.experience.intro}
             </p>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
@@ -33,10 +33,12 @@ const Experience = () => {
               ))}
             </div>
 
-            <div className="mt-5 inline-flex max-w-full items-center gap-3 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-              <ArrowUp className="h-4 w-4 flex-shrink-0" />
-              <span className="min-w-0 whitespace-normal leading-5">Past experience building toward current role</span>
-            </div>
+            {content.experience.note && (
+              <div className="mt-5 inline-flex max-w-full items-center gap-3 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+                <ArrowUp className="h-4 w-4 flex-shrink-0" />
+                <span className="min-w-0 whitespace-normal leading-5">{content.experience.note}</span>
+              </div>
+            )}
           </Reveal>
 
           <div className="relative min-w-0">

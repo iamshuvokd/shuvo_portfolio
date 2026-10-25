@@ -494,3 +494,69 @@ test.describe('B5: an expired session never throws away unsaved work', () => {
     expect((await api.publicContent()).hero.tagline).toBe(text);
   });
 });
+
+test.describe('B10: every visible word can be edited from the admin', () => {
+  test.beforeEach(async ({ page, signIn }) => {
+    await signIn(page);
+  });
+
+  test('hero, section headings, contact copy, header button and footer text go live', async ({ page, context }) => {
+    const site = await context.newPage();
+    await site.goto('/');
+    await expect(site.locator('header')).toContainText('Hire Me');
+
+    await page.goto('/admin');
+    await page.bringToFront();
+
+    await openTab(page, 'Hero');
+    await page.getByLabel('Primary button').fill('Say hello');
+    await page.getByLabel('CV button').fill('Get my resume');
+    await page.getByLabel('Typing prefix').fill('Currently a');
+    await page.getByLabel('Portrait card subtitle').fill('Shipping real products');
+
+    await openTab(page, 'Experience');
+    await page.getByLabel('Title', { exact: true }).fill('My Career');
+    await openTab(page, 'Projects');
+    await page.getByLabel('Title', { exact: true }).first().fill('My Best Work');
+    await openTab(page, 'Skills');
+    await page.getByLabel('Focus card title').fill('What I do');
+    await openTab(page, 'Contact & Footer');
+    await page.getByLabel('Header button').fill('Work with me');
+    await page.getByLabel('Footer description').fill('A footer sentence written in the admin.');
+    await page.getByLabel('Form title').fill('Tell me more');
+    await page.getByLabel('Submit button').fill('Deliver message');
+    await publish(page);
+
+    await expect(site.locator('header')).toContainText('Work with me');
+    await expect(site.locator('header')).not.toContainText('Hire Me');
+    await expect(site.locator('#home')).toContainText('Say hello');
+    await expect(site.locator('#home')).toContainText('Get my resume');
+    await expect(site.locator('#home')).toContainText('Currently a');
+    await expect(site.locator('#home')).toContainText('Shipping real products');
+    await expect(site.locator('#experience h2')).toHaveText('My Career');
+    await expect(site.locator('#projects h2')).toHaveText('My Best Work');
+    await expect(site.locator('#skills')).toContainText('What I do');
+    await expect(site.locator('#contact')).toContainText('Tell me more');
+    await expect(site.getByRole('button', { name: 'Deliver message' })).toBeVisible();
+    await expect(site.locator('footer')).toContainText('A footer sentence written in the admin.');
+  });
+
+  test('emptying an optional label hides it instead of leaving an empty badge', async ({ page, context }) => {
+    const site = await context.newPage();
+    await site.goto('/');
+    await expect(site.locator('#about')).toContainText('Verified');
+    await expect(site.locator('#experience')).toContainText('Past experience building toward current role');
+
+    await page.goto('/admin');
+    await page.bringToFront();
+    await openTab(page, 'About');
+    await page.getByLabel('Profile badge').fill('');
+    await openTab(page, 'Experience');
+    await page.getByLabel('Timeline note').fill('');
+    await publish(page);
+
+    await expect(site.locator('#about')).not.toContainText('Verified');
+    await expect(site.locator('#experience')).not.toContainText('Past experience building toward current role');
+    await expect(site.locator('#about aside')).toContainText('Bangladesh'); // the other badge is unaffected
+  });
+});

@@ -15,12 +15,12 @@ const Skills = () => {
       <div className="container relative z-10 mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.45fr] lg:gap-14">
           <Reveal className="lg:sticky lg:top-28 lg:self-start">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-primary">Technical Profile</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-primary">{content.skills.eyebrow}</p>
             <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              Skills & Expertise
+              {content.skills.title}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-              A cross-functional toolkit for building intelligent products, automating business workflows, and delivering reliable software systems.
+              {content.skills.intro}
             </p>
 
             <div className="mt-7 rounded-2xl border border-border/70 bg-card/50 p-5 shadow-xl shadow-black/10 backdrop-blur-xl">
@@ -29,8 +29,8 @@ const Skills = () => {
                   <Layers3 className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Engineering Focus</p>
-                  <p className="mt-1 text-xs text-muted-foreground">AI, automation, full-stack, analytics</p>
+                  <p className="text-sm font-semibold text-foreground">{content.skills.focusTitle}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{content.skills.focusText}</p>
                 </div>
               </div>
             </div>

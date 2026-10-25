@@ -22,29 +22,74 @@
     "badge": "Sr. Software Engineer & AI Engineer",
     "greeting": "Hi, I'm",
     "firstName": "Shuvo",
-    "roles": ["Sr. Software Engineer", "AI Engineer", "Automation Specialist", "Full-Stack Developer"],
+    "roles": [
+      "Sr. Software Engineer",
+      "AI Engineer",
+      "Automation Specialist",
+      "Full-Stack Developer"
+    ],
     "tagline": "Building intelligent digital experiences through AI, automation, analytics, and scalable software engineering.",
     "metrics": [
-      { "value": "5+", "label": "Years building systems" },
-      { "value": "20+", "label": "AI & automation projects" },
-      { "value": "70%", "label": "Response-time reduction" }
-    ]
+      {
+        "value": "5+",
+        "label": "Years building systems"
+      },
+      {
+        "value": "20+",
+        "label": "AI & automation projects"
+      },
+      {
+        "value": "70%",
+        "label": "Response-time reduction"
+      }
+    ],
+    "rolePrefix": "I am a",
+    "primaryButton": "Get in Touch",
+    "cvButton": "Download CV",
+    "cardTagline": "AI, automation, data, product delivery"
   },
   "about": {
     "heading": "Building practical software with AI, automation, and clean product experience.",
     "paragraph": "I am a Sr. Software Engineer focused on full-stack development, business automation, AI-enabled workflows, and analytics products. I turn complex operations into clear systems that teams can use, maintain, and scale.",
     "cardSummary": "Product-minded engineering for AI, automation, dashboards, and scalable web applications.",
     "quickFacts": [
-      { "label": "Experience", "value": "5+ Years" },
-      { "label": "Role", "value": "Sr. Software Engineer" },
-      { "label": "Focus", "value": "AI + Automation" }
+      {
+        "label": "Experience",
+        "value": "5+ Years"
+      },
+      {
+        "label": "Role",
+        "value": "Sr. Software Engineer"
+      },
+      {
+        "label": "Focus",
+        "value": "AI + Automation"
+      }
     ],
     "focusAreas": [
-      { "icon": "Code2", "title": "Software Systems", "text": "Full-stack apps, APIs, and maintainable architecture." },
-      { "icon": "Workflow", "title": "Automation", "text": "Power Apps, process flows, and business operations." },
-      { "icon": "Brain", "title": "AI Products", "text": "Applied AI features, assistants, and workflow intelligence." },
-      { "icon": "LineChart", "title": "Analytics", "text": "Dashboards, reporting, and decision-ready data views." }
-    ]
+      {
+        "icon": "Code2",
+        "title": "Software Systems",
+        "text": "Full-stack apps, APIs, and maintainable architecture."
+      },
+      {
+        "icon": "Workflow",
+        "title": "Automation",
+        "text": "Power Apps, process flows, and business operations."
+      },
+      {
+        "icon": "Brain",
+        "title": "AI Products",
+        "text": "Applied AI features, assistants, and workflow intelligence."
+      },
+      {
+        "icon": "LineChart",
+        "title": "Analytics",
+        "text": "Dashboards, reporting, and decision-ready data views."
+      }
+    ],
+    "eyebrow": "About Me",
+    "verifiedLabel": "Verified"
   },
   "experience": {
     "items": [
@@ -74,10 +119,23 @@
       }
     ],
     "highlights": [
-      { "label": "Timeline", "value": "2023 - Present" },
-      { "label": "Current Role", "value": "Sr. Software Engineer" },
-      { "label": "Core Track", "value": "AI + Automation" }
-    ]
+      {
+        "label": "Timeline",
+        "value": "2023 - Present"
+      },
+      {
+        "label": "Current Role",
+        "value": "Sr. Software Engineer"
+      },
+      {
+        "label": "Core Track",
+        "value": "AI + Automation"
+      }
+    ],
+    "eyebrow": "Career Timeline",
+    "title": "Professional Journey",
+    "intro": "A focused path through software engineering, business automation, AI systems, and data-driven product delivery.",
+    "note": "Past experience building toward current role"
   },
   "projects": {
     "items": [
@@ -87,7 +145,12 @@
         "icon": "Bot",
         "impact": "Reduced response time by 70%",
         "description": "NLP-powered assistant for medical queries and appointment workflows, built with a production-minded API and frontend experience.",
-        "tech": ["Python", "TensorFlow", "React", "FastAPI"],
+        "tech": [
+          "Python",
+          "TensorFlow",
+          "React",
+          "FastAPI"
+        ],
         "github": "",
         "demo": ""
       },
@@ -97,7 +160,11 @@
         "icon": "Workflow",
         "impact": "Digitized guest entry and notifications",
         "description": "Power Apps based guest management system with QR scanning, host notifications, meeting records, and reporting support.",
-        "tech": ["Power Apps", "Power Automate", "Power BI"],
+        "tech": [
+          "Power Apps",
+          "Power Automate",
+          "Power BI"
+        ],
         "github": "https://github.com/iamshuvokd/Guest_Management_System",
         "demo": "https://github.com/iamshuvokd/Guest_Management_System?tab=readme-ov-file#guest-management-system"
       },
@@ -107,7 +174,11 @@
         "icon": "Layers3",
         "impact": "Improved operational tracking",
         "description": "Low-code inventory and parts workflow solution for structured requests, approvals, visibility, and management reporting.",
-        "tech": ["Power Apps", "Power Automate", "Power BI"],
+        "tech": [
+          "Power Apps",
+          "Power Automate",
+          "Power BI"
+        ],
         "github": "https://github.com/iamshuvokd/Parts_Management_System",
         "demo": "https://github.com/iamshuvokd/Parts_Management_System?tab=readme-ov-file#-parts-management-system"
       },
@@ -117,16 +188,33 @@
         "icon": "MonitorCheck",
         "impact": "Patient-focused digital care",
         "description": "Healthcare innovation project combining service accessibility, health monitoring concepts, and data-backed patient workflows.",
-        "tech": ["React JS", "Node.js", "Express", "MongoDB"],
+        "tech": [
+          "React JS",
+          "Node.js",
+          "Express",
+          "MongoDB"
+        ],
         "github": "https://github.com/iamshuvokd/mediCare",
         "demo": "https://github.com/iamshuvokd/mediCare"
       }
     ],
     "stats": [
-      { "label": "Project Focus", "value": "AI + Automation" },
-      { "label": "Delivery Style", "value": "Product-first" },
-      { "label": "Business Value", "value": "Workflow impact" }
-    ]
+      {
+        "label": "Project Focus",
+        "value": "AI + Automation"
+      },
+      {
+        "label": "Delivery Style",
+        "value": "Product-first"
+      },
+      {
+        "label": "Business Value",
+        "value": "Workflow impact"
+      }
+    ],
+    "eyebrow": "Selected Work",
+    "title": "Featured Projects",
+    "intro": "Practical systems built around intelligent automation, data visibility, and product workflows that solve business problems."
   },
   "skills": {
     "groups": [
@@ -135,35 +223,115 @@
         "icon": "Code2",
         "level": "Advanced",
         "summary": "Full-stack application development with production-focused architecture and maintainable delivery.",
-        "skills": ["React", "Node.js", "FastAPI", "Django", "JavaScript", "Python"]
+        "skills": [
+          "React",
+          "Node.js",
+          "FastAPI",
+          "Django",
+          "JavaScript",
+          "Python"
+        ]
       },
       {
         "title": "AI & Machine Learning",
         "icon": "Brain",
         "level": "Applied",
         "summary": "Practical AI systems for NLP, automation, model workflows, and intelligent product features.",
-        "skills": ["TensorFlow", "PyTorch", "Scikit-learn", "NLP", "LangChain", "GPT"]
+        "skills": [
+          "TensorFlow",
+          "PyTorch",
+          "Scikit-learn",
+          "NLP",
+          "LangChain",
+          "GPT"
+        ]
       },
       {
         "title": "Power Platform",
         "icon": "Workflow",
         "level": "Specialist",
         "summary": "Business process automation, low-code applications, dashboards, and workflow modernization.",
-        "skills": ["Power Apps", "Power Automate", "Power BI", "Dataverse", "SharePoint", "Excel"]
+        "skills": [
+          "Power Apps",
+          "Power Automate",
+          "Power BI",
+          "Dataverse",
+          "SharePoint",
+          "Excel"
+        ]
       },
       {
         "title": "Data & Analytics",
         "icon": "LineChart",
         "level": "Strong",
         "summary": "Data analysis, reporting, visualization, and operational insight generation for business teams.",
-        "skills": ["Power BI", "Tableau", "Python", "Data Analysis", "Visualization", "Reporting"]
+        "skills": [
+          "Power BI",
+          "Tableau",
+          "Python",
+          "Data Analysis",
+          "Visualization",
+          "Reporting"
+        ]
       }
     ],
     "stack": [
-      { "label": "Languages", "items": ["Python", "JavaScript", "Java", "C", "C++"] },
-      { "label": "Frameworks", "items": ["React", "Node.js", "Express", "FastAPI", "Django"] },
-      { "label": "Databases", "items": ["MongoDB", "PostgreSQL", "MySQL", "Redis"] },
-      { "label": "Cloud & Tools", "items": ["Azure", "AWS", "Git", "Power Platform"] }
-    ]
+      {
+        "label": "Languages",
+        "items": [
+          "Python",
+          "JavaScript",
+          "Java",
+          "C",
+          "C++"
+        ]
+      },
+      {
+        "label": "Frameworks",
+        "items": [
+          "React",
+          "Node.js",
+          "Express",
+          "FastAPI",
+          "Django"
+        ]
+      },
+      {
+        "label": "Databases",
+        "items": [
+          "MongoDB",
+          "PostgreSQL",
+          "MySQL",
+          "Redis"
+        ]
+      },
+      {
+        "label": "Cloud & Tools",
+        "items": [
+          "Azure",
+          "AWS",
+          "Git",
+          "Power Platform"
+        ]
+      }
+    ],
+    "eyebrow": "Technical Profile",
+    "title": "Skills & Expertise",
+    "intro": "A cross-functional toolkit for building intelligent products, automating business workflows, and delivering reliable software systems.",
+    "focusTitle": "Engineering Focus",
+    "focusText": "AI, automation, full-stack, analytics"
+  },
+  "contact": {
+    "eyebrow": "Get in Touch",
+    "title": "Let's build something useful.",
+    "intro": "Share your project goal, workflow problem, or product idea. I can help shape a clear technical path for AI, automation, analytics, and scalable web applications.",
+    "note": "Best for AI products, workflow automation, dashboards, and full-stack product engineering.",
+    "formEyebrow": "Project Inquiry",
+    "formTitle": "Start a conversation",
+    "submitLabel": "Send Message"
+  },
+  "site": {
+    "hireLabel": "Hire Me",
+    "footerBlurb": "Building AI products, automation systems, analytics workflows, and scalable software for teams that need clarity and speed."
   }
 }

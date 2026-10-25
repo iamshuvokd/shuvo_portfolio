@@ -29,12 +29,19 @@ export interface Hero {
   roles: string[];
   tagline: string;
   metrics: { value: string; label: string }[];
+  rolePrefix: string;
+  primaryButton: string;
+  cvButton: string;
+  cardTagline: string;
 }
 
 export interface About {
   heading: string;
   paragraph: string;
   cardSummary: string;
+  eyebrow: string;
+  /** Empty hides the badge. */
+  verifiedLabel: string;
   quickFacts: LabelValue[];
   focusAreas: { icon: string; title: string; text: string }[];
 }
@@ -70,13 +77,31 @@ export interface SkillGroup {
   skills: string[];
 }
 
+export interface SectionHeading {
+  eyebrow: string;
+  title: string;
+  intro: string;
+}
+
+export interface ContactCopy {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  note: string;
+  formEyebrow: string;
+  formTitle: string;
+  submitLabel: string;
+}
+
 export interface SiteContent {
   profile: Profile;
   hero: Hero;
   about: About;
-  experience: { items: ExperienceItem[]; highlights: LabelValue[] };
-  projects: { items: ProjectItem[]; stats: LabelValue[] };
-  skills: { groups: SkillGroup[]; stack: { label: string; items: string[] }[] };
+  experience: SectionHeading & { items: ExperienceItem[]; highlights: LabelValue[]; note: string };
+  projects: SectionHeading & { items: ProjectItem[]; stats: LabelValue[] };
+  skills: SectionHeading & { groups: SkillGroup[]; stack: { label: string; items: string[] }[]; focusTitle: string; focusText: string };
+  contact: ContactCopy;
+  site: { hireLabel: string; footerBlurb: string };
 }
 
 export interface MediaItem {

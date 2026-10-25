@@ -7,7 +7,7 @@ import { cleanContent, serializeContent } from '@/lib/clean-content';
 import { ApiError } from '@/services/http';
 import { adminApi } from '@/services/admin.service';
 import type { SiteContent } from '@/types/content';
-import { AboutEditor, ExperienceEditor, HeroEditor, ProfileEditor, ProjectsEditor, SkillsEditor } from './editors';
+import { AboutEditor, ContactEditor, ExperienceEditor, HeroEditor, ProfileEditor, ProjectsEditor, SkillsEditor } from './editors';
 import JsonPanel from './JsonPanel';
 import MediaLibrary from './MediaLibrary';
 import MessagesPanel from './MessagesPanel';
@@ -19,6 +19,7 @@ const tabs = [
   ['experience', 'Experience'],
   ['projects', 'Projects'],
   ['skills', 'Skills'],
+  ['contact', 'Contact & Footer'],
   ['media', 'Media'],
   ['messages', 'Messages'],
   ['json', 'JSON'],
@@ -217,6 +218,9 @@ const AdminDashboard = ({ onLogout, onSessionExpired }: { onLogout: () => void; 
         </TabsContent>
         <TabsContent value="skills">
           <SkillsEditor value={draft.skills} onChange={set('skills')} />
+        </TabsContent>
+        <TabsContent value="contact">
+          <ContactEditor value={draft.contact} onChange={set('contact')} site={draft.site} onSiteChange={set('site')} />
         </TabsContent>
         <TabsContent value="media">
           <MediaLibrary contentJson={draftJson} />

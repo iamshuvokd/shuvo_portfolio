@@ -56,11 +56,18 @@ export const contentSchema = z.object({
     roles: z.array(text(80)).min(1).max(12),
     tagline: longText,
     metrics: z.array(z.object({ value: text(30), label: text(100) })).max(6),
+    rolePrefix: text(40),
+    primaryButton: text(40),
+    cvButton: text(40),
+    cardTagline: text(160),
   }),
   about: z.object({
     heading: text(300),
     paragraph: longText,
     cardSummary: text(400),
+    eyebrow: text(60),
+    /** Empty hides the badge. */
+    verifiedLabel: text(40),
     quickFacts: z.array(labelValue).max(6),
     focusAreas: z.array(z.object({ icon, title: text(80), text: text(300) })).max(8),
   }),
@@ -78,6 +85,11 @@ export const contentSchema = z.object({
       )
       .max(30),
     highlights: z.array(labelValue).max(6),
+    eyebrow: text(60),
+    title: text(120),
+    intro: text(400),
+    /** Empty hides the pill. */
+    note: text(160),
   }),
   projects: z.object({
     items: z
@@ -98,6 +110,9 @@ export const contentSchema = z.object({
       )
       .max(50),
     stats: z.array(labelValue).max(6),
+    eyebrow: text(60),
+    title: text(120),
+    intro: text(400),
   }),
   skills: z.object({
     groups: z
@@ -112,6 +127,24 @@ export const contentSchema = z.object({
       )
       .max(12),
     stack: z.array(z.object({ label: text(60), items: z.array(text(40)).max(30) })).max(12),
+    eyebrow: text(60),
+    title: text(120),
+    intro: text(400),
+    focusTitle: text(80),
+    focusText: text(160),
+  }),
+  contact: z.object({
+    eyebrow: text(60),
+    title: text(160),
+    intro: text(500),
+    note: text(300),
+    formEyebrow: text(60),
+    formTitle: text(120),
+    submitLabel: text(40),
+  }),
+  site: z.object({
+    hireLabel: text(30),
+    footerBlurb: text(300),
   }),
 });
 

@@ -83,7 +83,7 @@ const Footer = () => {
                   </span>
                 </button>
                 <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground">
-                  Building AI products, automation systems, analytics workflows, and scalable software for teams that need clarity and speed.
+                  {content.site.footerBlurb}
                 </p>
               </div>
             </div>

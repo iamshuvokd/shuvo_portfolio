@@ -18,7 +18,7 @@ const About = () => {
         <Reveal className="rounded-lg border border-border/75 bg-card/45 p-5 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-7">
           <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_310px] md:items-center">
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">About Me</p>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">{about.eyebrow}</p>
               <h2 className="max-w-4xl text-3xl font-semibold leading-tight text-foreground sm:text-4xl lg:text-[42px]">
                 {about.heading}
               </h2>
@@ -47,10 +47,12 @@ const About = () => {
                 />
                 <div className="mt-4 min-w-0">
                   <div className="mb-3 flex flex-wrap justify-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                      <BadgeCheck className="h-3.5 w-3.5" />
-                      Verified
-                    </span>
+                    {about.verifiedLabel && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                        <BadgeCheck className="h-3.5 w-3.5" />
+                        {about.verifiedLabel}
+                      </span>
+                    )}
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-card/55 px-2.5 py-1 text-xs text-muted-foreground">
                       <MapPin className="h-3.5 w-3.5 text-primary" />
                       {profile.location}

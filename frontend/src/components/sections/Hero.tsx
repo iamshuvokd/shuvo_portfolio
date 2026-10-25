@@ -55,7 +55,7 @@ const Hero = () => {
             </motion.h1>
 
             <motion.div {...item(0.28)} className="mt-6 flex min-h-12 flex-wrap items-center gap-x-3 gap-y-2 text-2xl font-semibold text-foreground sm:text-3xl lg:text-4xl">
-              <span>I am a</span>
+              <span>{hero.rolePrefix}</span>
               <TypeAnimation
                 key={hero.roles.join('|')}
                 sequence={hero.roles.flatMap((role, index) => [role, index === 0 ? 2200 : 1800])}
@@ -77,7 +77,7 @@ const Hero = () => {
                 onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <Mail className="h-5 w-5 transition-transform group-hover:-translate-y-0.5" />
-                Get in Touch
+                {hero.primaryButton}
               </Button>
 
               <Button
@@ -87,7 +87,7 @@ const Hero = () => {
                 onClick={() => profile.cvUrl && window.open(assetUrl(profile.cvUrl), '_blank', 'noopener,noreferrer')}
               >
                 <Download className="h-5 w-5 transition-transform group-hover:-translate-y-0.5" />
-                Download CV
+                {hero.cvButton}
               </Button>
             </motion.div>
 
@@ -126,7 +126,7 @@ const Hero = () => {
                 <div className="min-w-0">
                   <p className="text-lg font-semibold text-foreground">{profile.name}</p>
                   <p className="mt-2 text-sm font-semibold text-primary">{profile.role}</p>
-                  <p className="mt-2 text-xs text-muted-foreground">AI, automation, data, product delivery</p>
+                  <p className="mt-2 text-xs text-muted-foreground">{hero.cardTagline}</p>
                 </div>
               </div>
             </div>

@@ -17,12 +17,12 @@ const Projects = () => {
       <div className="container relative z-10 mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.45fr] lg:gap-14">
           <Reveal className="lg:sticky lg:top-28 lg:self-start">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-primary">Selected Work</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-primary">{content.projects.eyebrow}</p>
             <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              Featured Projects
+              {content.projects.title}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-              Practical systems built around intelligent automation, data visibility, and product workflows that solve business problems.
+              {content.projects.intro}
             </p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">

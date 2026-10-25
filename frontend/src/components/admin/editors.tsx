@@ -70,6 +70,14 @@ export const HeroEditor = ({ value, onChange }: EditorProps<'hero'>) => {
   const set = (patch: Partial<SiteContent['hero']>) => onChange({ ...value, ...patch });
   return (
     <div className="space-y-6">
+      <Panel title="Buttons & labels" description="Small texts around the hero. Every word on the site can be changed.">
+        <Grid>
+          <TextField label="Typing prefix" hint="The words before the rotating role." value={value.rolePrefix} onChange={(rolePrefix) => set({ rolePrefix })} />
+          <TextField label="Primary button" value={value.primaryButton} onChange={(primaryButton) => set({ primaryButton })} />
+          <TextField label="CV button" value={value.cvButton} onChange={(cvButton) => set({ cvButton })} />
+          <TextField label="Portrait card subtitle" value={value.cardTagline} onChange={(cardTagline) => set({ cardTagline })} />
+        </Grid>
+      </Panel>
       <Panel title="Hero text">
         <TextField label="Top badge" value={value.badge} onChange={(badge) => set({ badge })} />
         <Grid>
@@ -102,6 +110,12 @@ export const AboutEditor = ({ value, onChange }: EditorProps<'about'>) => {
   const set = (patch: Partial<SiteContent['about']>) => onChange({ ...value, ...patch });
   return (
     <div className="space-y-6">
+      <Panel title="Labels">
+        <Grid>
+          <TextField label="Section label" value={value.eyebrow} onChange={(eyebrow) => set({ eyebrow })} />
+          <TextField label="Profile badge" hint="Leave empty to hide the badge." value={value.verifiedLabel} onChange={(verifiedLabel) => set({ verifiedLabel })} />
+        </Grid>
+      </Panel>
       <Panel title="About text">
         <AreaField label="Heading" value={value.heading} onChange={(heading) => set({ heading })} rows={2} />
         <AreaField label="Paragraph" value={value.paragraph} onChange={(paragraph) => set({ paragraph })} rows={5} />
@@ -148,6 +162,14 @@ export const ExperienceEditor = ({ value, onChange }: EditorProps<'experience'>)
   const set = (patch: Partial<SiteContent['experience']>) => onChange({ ...value, ...patch });
   return (
     <div className="space-y-6">
+      <Panel title="Section heading">
+        <Grid>
+          <TextField label="Small label" value={value.eyebrow} onChange={(eyebrow) => set({ eyebrow })} />
+          <TextField label="Title" value={value.title} onChange={(title) => set({ title })} />
+        </Grid>
+        <AreaField label="Intro text" value={value.intro} onChange={(intro) => set({ intro })} rows={2} />
+        <TextField label="Timeline note" hint="The pill under the highlights. Leave empty to hide it." value={value.note} onChange={(note) => set({ note })} />
+      </Panel>
       <Panel title="Positions" description="Listed top to bottom on the timeline. Use the arrows to reorder.">
         <ListEditor
           items={value.items}
@@ -193,6 +215,13 @@ export const ProjectsEditor = ({ value, onChange, profileGithubUrl }: EditorProp
   return (
     <div className="space-y-6">
       <GithubImport items={value.items} onChange={(items) => set({ items })} profileGithubUrl={profileGithubUrl} />
+      <Panel title="Section heading">
+        <Grid>
+          <TextField label="Small label" value={value.eyebrow} onChange={(eyebrow) => set({ eyebrow })} />
+          <TextField label="Title" value={value.title} onChange={(title) => set({ title })} />
+        </Grid>
+        <AreaField label="Intro text" value={value.intro} onChange={(intro) => set({ intro })} rows={2} />
+      </Panel>
       <Panel title="Projects" description="The first project is shown as the large featured card.">
         <ListEditor
           items={value.items}
@@ -249,6 +278,17 @@ export const SkillsEditor = ({ value, onChange }: EditorProps<'skills'>) => {
   const set = (patch: Partial<SiteContent['skills']>) => onChange({ ...value, ...patch });
   return (
     <div className="space-y-6">
+      <Panel title="Section heading">
+        <Grid>
+          <TextField label="Small label" value={value.eyebrow} onChange={(eyebrow) => set({ eyebrow })} />
+          <TextField label="Title" value={value.title} onChange={(title) => set({ title })} />
+        </Grid>
+        <AreaField label="Intro text" value={value.intro} onChange={(intro) => set({ intro })} rows={2} />
+        <Grid>
+          <TextField label="Focus card title" value={value.focusTitle} onChange={(focusTitle) => set({ focusTitle })} />
+          <TextField label="Focus card text" value={value.focusText} onChange={(focusText) => set({ focusText })} />
+        </Grid>
+      </Panel>
       <Panel title="Capability groups">
         <ListEditor
           items={value.groups}
@@ -283,6 +323,33 @@ export const SkillsEditor = ({ value, onChange }: EditorProps<'skills'>) => {
             </>
           )}
         />
+      </Panel>
+    </div>
+  );
+};
+
+export const ContactEditor = ({ value, onChange, site, onSiteChange }: EditorProps<'contact'> & { site: SiteContent['site']; onSiteChange: (site: SiteContent['site']) => void }) => {
+  const set = (patch: Partial<SiteContent['contact']>) => onChange({ ...value, ...patch });
+  return (
+    <div className="space-y-6">
+      <Panel title="Contact section" description="The left card next to the form.">
+        <Grid>
+          <TextField label="Small label" value={value.eyebrow} onChange={(eyebrow) => set({ eyebrow })} />
+          <TextField label="Title" value={value.title} onChange={(title) => set({ title })} />
+        </Grid>
+        <AreaField label="Intro text" value={value.intro} onChange={(intro) => set({ intro })} rows={3} />
+        <AreaField label="Footnote" value={value.note} onChange={(note) => set({ note })} rows={2} />
+      </Panel>
+      <Panel title="Contact form">
+        <Grid>
+          <TextField label="Form label" value={value.formEyebrow} onChange={(formEyebrow) => set({ formEyebrow })} />
+          <TextField label="Form title" value={value.formTitle} onChange={(formTitle) => set({ formTitle })} />
+          <TextField label="Submit button" value={value.submitLabel} onChange={(submitLabel) => set({ submitLabel })} />
+        </Grid>
+      </Panel>
+      <Panel title="Header & footer">
+        <TextField label="Header button" value={site.hireLabel} onChange={(hireLabel) => onSiteChange({ ...site, hireLabel })} />
+        <AreaField label="Footer description" value={site.footerBlurb} onChange={(footerBlurb) => onSiteChange({ ...site, footerBlurb })} rows={3} />
       </Panel>
     </div>
   );

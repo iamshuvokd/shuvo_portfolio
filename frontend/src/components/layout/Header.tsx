@@ -109,7 +109,7 @@ const Header = () => {
 
           <div className="hidden items-center gap-4 md:flex">
             <Button size="sm" className="rounded-lg" onClick={() => scrollToSection('#contact')}>
-              Hire Me
+              {content.site.hireLabel}
             </Button>
           </div>
 

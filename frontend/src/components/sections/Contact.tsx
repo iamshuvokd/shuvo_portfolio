@@ -10,7 +10,7 @@ import { useContent } from '@/hooks/use-content';
 
 const Contact = () => {
   const { content } = useContent();
-  const { profile } = content;
+  const { profile, contact: copy } = content;
   const contactMethods = [
     { icon: Mail, label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
     { icon: Phone, label: 'Phone', value: profile.phone, href: `tel:${profile.phone.replace(/\s+/g, '')}` },
@@ -84,13 +84,12 @@ const Contact = () => {
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)] lg:items-start xl:grid-cols-[400px_minmax(0,1fr)]">
           <Reveal className="rounded-lg border border-border/75 bg-card/45 p-5 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-6 lg:sticky lg:top-28">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">Get in Touch</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
             <h2 className="text-3xl font-semibold leading-tight text-foreground xl:text-4xl">
-              Let&apos;s build something useful.
+              {copy.title}
             </h2>
             <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base">
-              Share your project goal, workflow problem, or product idea. I can help shape a clear technical path for
-              AI, automation, analytics, and scalable web applications.
+              {copy.intro}
             </p>
 
             <div className="mt-5 grid gap-2.5">
@@ -139,7 +138,7 @@ const Contact = () => {
             </div>
 
             <p className="mt-5 border-t border-border/70 pt-4 text-sm leading-6 text-muted-foreground">
-              Best for AI products, workflow automation, dashboards, and full-stack product engineering.
+              {copy.note}
             </p>
           </Reveal>
 
@@ -150,8 +149,8 @@ const Contact = () => {
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
             <div className="mb-5 border-b border-border/70 pb-5">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Project Inquiry</p>
-                <h3 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">Start a conversation</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.formEyebrow}</p>
+                <h3 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">{copy.formTitle}</h3>
               </div>
             </div>
 
@@ -209,7 +208,7 @@ const Contact = () => {
                   className="h-11 rounded-lg px-6 font-semibold text-primary-foreground"
                 >
                   <Send className="mr-2 h-5 w-5" />
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                  {isSubmitting ? 'Sending...' : copy.submitLabel}
                 </Button>
               </div>
             </form>
