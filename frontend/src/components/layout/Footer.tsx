@@ -133,7 +133,7 @@ const Footer = () => {
               </span>
               <div className="min-w-0">
                 <h3 className="text-sm font-semibold text-foreground">Local Time</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Dhaka, {profile.location}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{profile.location}</p>
               </div>
             </div>
 

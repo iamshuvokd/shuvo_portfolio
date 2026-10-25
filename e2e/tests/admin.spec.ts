@@ -371,3 +371,22 @@ test.describe('Admin: import projects from GitHub', () => {
     await expect(page.getByRole('button', { name: 'Add project' })).toBeVisible(); // editor still works
   });
 });
+
+test.describe('B9: footer clock shows exactly the location you set', () => {
+  test('no hard-coded city is prepended', async ({ page, context, signIn, api }) => {
+    await signIn(page);
+    const site = await context.newPage();
+    await site.goto('/');
+    await page.goto('/admin');
+    await page.bringToFront();
+
+    await page.getByLabel('Location').fill('London, United Kingdom');
+    await page.getByLabel('Time zone (IANA)').fill('Europe/London');
+    await publish(page);
+
+    const clock = site.locator('footer section', { hasText: 'Local Time' });
+    await expect(clock).toContainText('London, United Kingdom');
+    await expect(clock).not.toContainText('Dhaka');
+    expect((await api.publicContent()).profile.timeZone).toBe('Europe/London');
+  });
+});
