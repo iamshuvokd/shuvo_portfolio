@@ -1,0 +1,25 @@
+# {$SITE_ADDRESS::80} = the SITE_ADDRESS environment variable, defaulting to ":80" (plain HTTP).
+# Put a real domain there (e.g. example.com) and Caddy fetches and renews HTTPS certificates by itself.
+{$SITE_ADDRESS::80} {
+	# API: never compressed or buffered, so the live-update stream (Server-Sent Events) is delivered instantly.
+	handle /api/* {
+		reverse_proxy backend:4000 {
+			flush_interval -1
+		}
+	}
+
+	# Everything else is the static site.
+	handle {
+		encode zstd gzip
+		reverse_proxy web:80
+	}
+
+	# HTTPS-only hint for browsers (Caddy only sends it over TLS sites).
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	header -Server
+
+	log {
+		output stdout
+		format console
+	}
+}

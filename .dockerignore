@@ -1,0 +1,17 @@
+# Build context = repo root (images need ../shared). Keep it small and never ship secrets.
+**/node_modules
+**/dist
+**/coverage
+**/*.log
+.git
+.github
+e2e
+docs
+deploy
+**/test-results
+**/playwright-report
+**/.env
+**/.env.*
+!**/.env.example
+**/.DS_Store
+backend/tests
