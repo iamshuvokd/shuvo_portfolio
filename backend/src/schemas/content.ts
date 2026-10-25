@@ -14,6 +14,22 @@ const link = z
     message: 'Must be empty, an http(s) URL, mailto:, tel:, or a /path',
   });
 
+/** A real IANA zone such as "Asia/Dhaka". A typo like "Dhaka" used to crash every visitor's browser. */
+const timeZone = z
+  .string()
+  .max(60)
+  .refine(
+    (value) => {
+      try {
+        new Intl.DateTimeFormat('en-US', { timeZone: value });
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    { message: 'Must be a valid IANA time zone, e.g. Asia/Dhaka' },
+  );
+
 const labelValue = z.object({ label: text(80), value: text(160) });
 const icon = z.string().max(40);
 
@@ -25,7 +41,7 @@ export const contentSchema = z.object({
     email: z.string().email().max(200),
     phone: text(40),
     location: text(120),
-    timeZone: text(60),
+    timeZone,
     cvUrl: link,
     photoUrl: link,
     available: z.boolean(),

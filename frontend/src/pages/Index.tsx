@@ -9,6 +9,7 @@ import Footer from '@/components/layout/Footer';
 import AnimatedBackground from '@/components/effects/AnimatedBackground';
 import ScrollProgress from '@/components/effects/ScrollProgress';
 import { MotionConfig } from 'framer-motion';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 
 const Index = () => {
   return (
@@ -17,16 +18,16 @@ const Index = () => {
       <ScrollProgress />
       <AnimatedBackground />
       <div className="relative z-10">
-        <Header />
+        <ErrorBoundary name="header"><Header /></ErrorBoundary>
         <main>
-          <Hero />
-          <About />
-          <Experience />
-          <Projects />
-          <Skills />
-          <Contact />
+          <ErrorBoundary name="hero"><Hero /></ErrorBoundary>
+          <ErrorBoundary name="about"><About /></ErrorBoundary>
+          <ErrorBoundary name="experience"><Experience /></ErrorBoundary>
+          <ErrorBoundary name="projects"><Projects /></ErrorBoundary>
+          <ErrorBoundary name="skills"><Skills /></ErrorBoundary>
+          <ErrorBoundary name="contact"><Contact /></ErrorBoundary>
         </main>
-        <Footer />
+        <ErrorBoundary name="footer"><Footer /></ErrorBoundary>
       </div>
     </div>
     </MotionConfig>

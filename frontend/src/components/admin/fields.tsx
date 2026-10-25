@@ -26,15 +26,31 @@ export const TextField = ({
   onChange,
   placeholder,
   type = 'text',
-}: BaseProps & { value: string; onChange: (value: string) => void; placeholder?: string; type?: string }) => {
+  error,
+}: BaseProps & { value: string; onChange: (value: string) => void; placeholder?: string; type?: string; error?: string }) => {
   const id = useId();
   return (
     <div>
       <label htmlFor={id} className={labelClass}>
         {label}
       </label>
-      <Input id={id} type={type} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
-      <Hint>{hint}</Hint>
+      <Input
+        id={id}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className={error ? 'border-destructive focus-visible:ring-destructive' : undefined}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {error ? (
+        <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-destructive">
+          {error}
+        </p>
+      ) : (
+        <Hint>{hint}</Hint>
+      )}
     </div>
   );
 };

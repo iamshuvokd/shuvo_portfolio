@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ContentProvider } from "./context/ContentContext";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -19,6 +20,18 @@ const App = () => (
       <Toaster />
       <Sonner />
       <ContentProvider>
+        <ErrorBoundary
+          name="app"
+          fallback={
+            <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
+              <h1 className="text-2xl font-semibold text-foreground">Something went wrong</h1>
+              <p className="text-muted-foreground">Please reload the page. If it keeps happening, try again in a few minutes.</p>
+              <button className="rounded-lg bg-primary px-5 py-2 font-medium text-primary-foreground" onClick={() => window.location.reload()}>
+                Reload
+              </button>
+            </div>
+          }
+        >
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -34,6 +47,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </ErrorBoundary>
       </ContentProvider>
     </TooltipProvider>
   </QueryClientProvider>

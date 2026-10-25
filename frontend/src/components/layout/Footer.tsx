@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useContent } from '@/hooks/use-content';
 import Reveal from '@/components/common/Reveal';
 import { quickLinks } from '@/data/navigation';
+import { safeTimeZone } from '@/lib/timezone';
 
 const Footer = () => {
   const { content } = useContent();
@@ -22,27 +23,29 @@ const Footer = () => {
     return () => window.clearInterval(timer);
   }, []);
 
+  const timeZone = safeTimeZone(profile.timeZone);
+
   const localTime = useMemo(
     () =>
       new Intl.DateTimeFormat('en-US', {
-        timeZone: profile.timeZone,
+        timeZone,
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
         hour12: true,
       }).format(now),
-    [now, profile.timeZone],
+    [now, timeZone],
   );
 
   const localDate = useMemo(
     () =>
       new Intl.DateTimeFormat('en-US', {
-        timeZone: profile.timeZone,
+        timeZone,
         weekday: 'short',
         month: 'short',
         day: '2-digit',
       }).format(now),
-    [now, profile.timeZone],
+    [now, timeZone],
   );
 
   const scrollTo = (href: string) => {

@@ -1,5 +1,6 @@
 import type { SiteContent } from '@/types/content';
 import GithubImport from './GithubImport';
+import { isValidTimeZone } from '@/lib/timezone';
 import { AreaField, Grid, IconSelect, ListEditor, MediaField, Panel, SwitchField, TagsField, TextField } from './fields';
 
 interface EditorProps<K extends keyof SiteContent> {
@@ -38,7 +39,13 @@ export const ProfileEditor = ({ value, onChange }: EditorProps<'profile'>) => {
           <TextField label="Email" type="email" value={value.email} onChange={(email) => set({ email })} />
           <TextField label="Phone" hint="Include the country code, e.g. +8801XXXXXXXXX." value={value.phone} onChange={(phone) => set({ phone })} />
           <TextField label="Location" value={value.location} onChange={(location) => set({ location })} />
-          <TextField label="Time zone (IANA)" hint="Used for the footer clock, e.g. Asia/Dhaka." value={value.timeZone} onChange={(timeZone) => set({ timeZone })} />
+          <TextField
+            label="Time zone (IANA)"
+            hint="Used for the footer clock, e.g. Asia/Dhaka."
+            value={value.timeZone}
+            onChange={(timeZone) => set({ timeZone })}
+            error={isValidTimeZone(value.timeZone) ? undefined : 'Not a valid time zone. Use a name like Asia/Dhaka or Europe/London.'}
+          />
         </Grid>
       </Panel>
 
