@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { assetUrl } from '@/config/env';
 import { useToast } from '@/hooks/use-toast';
 import { adminApi } from '@/services/admin.service';
+import { ApiError } from '@/services/http';
 import type { MediaItem } from '@/types/content';
 import { Panel } from './fields';
 
@@ -44,16 +45,30 @@ const MediaLibrary = ({ contentJson }: { contentJson: string }) => {
   };
 
   const remove = async (item: MediaItem) => {
-    const inUse = contentJson.includes(item.id);
-    const message = inUse
-      ? `"${item.name}" is used on the site right now. Deleting it will break that image/link. Delete anyway?`
-      : `Delete "${item.name}"?`;
-    if (!window.confirm(message)) return;
+    if (!window.confirm(`Delete "${item.name}"?`)) return;
     try {
-      await adminApi.deleteMedia(item.id);
+      try {
+        await adminApi.deleteMedia(item.id);
+      } catch (error) {
+        // The server knows what the LIVE site uses; never break it without an explicit second confirmation.
+        if (!(error instanceof ApiError && error.status === 409)) throw error;
+        if (!window.confirm(`"${item.name}" is used on the live site right now. Deleting it will break that image or link.\n\nDelete anyway?`)) return;
+        await adminApi.deleteMedia(item.id, true);
+      }
       await load();
     } catch (error) {
       toast({ title: 'Delete failed', description: error instanceof Error ? error.message : '', variant: 'destructive' });
+    }
+  };
+
+  const cleanup = async () => {
+    if (!window.confirm('Delete every uploaded file that the published site does not use (older than 1 hour)?\n\nFiles used only by edits you have not published yet may be removed.')) return;
+    try {
+      const { deleted } = await adminApi.cleanupMedia();
+      await load();
+      toast({ title: deleted ? `Removed ${deleted} unused file${deleted === 1 ? '' : 's'}` : 'Nothing to clean up', description: 'Files in use were kept.' });
+    } catch (error) {
+      toast({ title: 'Cleanup failed', description: error instanceof Error ? error.message : '', variant: 'destructive' });
     }
   };
 
@@ -72,6 +87,10 @@ const MediaLibrary = ({ contentJson }: { contentJson: string }) => {
       <Button type="button" onClick={() => inputRef.current?.click()} disabled={busy}>
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
         Upload file
+      </Button>
+      <Button type="button" variant="outline" onClick={cleanup} className="ml-2">
+        <Trash2 className="h-4 w-4" />
+        Clean up unused
       </Button>
 
       {items === null ? (

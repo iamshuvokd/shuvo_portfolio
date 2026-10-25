@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { z } from 'zod';
+import { weakPasswordReason } from '../lib/password-policy.js';
 
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -26,7 +27,13 @@ const schema = z.object({
   GITHUB_TOKEN: z.string().optional(),
 });
 
-const parsed = schema.safeParse(process.env);
+const parsed = schema
+  .superRefine((value, ctx) => {
+    // In production a weak admin password is a startup error, not a suggestion.
+    const reason = value.NODE_ENV === 'production' ? weakPasswordReason(value.ADMIN_PASSWORD) : null;
+    if (reason) ctx.addIssue({ code: 'custom', path: ['ADMIN_PASSWORD'], message: `too weak for production: ${reason}` });
+  })
+  .safeParse(process.env);
 
 if (!parsed.success) {
   console.error('\nInvalid environment configuration:');
@@ -35,6 +42,11 @@ if (!parsed.success) {
   }
   console.error('\nCopy backend/.env.example to backend/.env and fill in the values.\n');
   process.exit(1);
+}
+
+if (parsed.data.NODE_ENV === 'development') {
+  const reason = weakPasswordReason(parsed.data.ADMIN_PASSWORD);
+  if (reason) console.warn(`[security] ADMIN_PASSWORD is weak (${reason}). Fine locally, but production will refuse to start with it.`);
 }
 
 export const env = {

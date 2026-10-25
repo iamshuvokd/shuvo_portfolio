@@ -82,7 +82,9 @@ export const adminApi = {
     form.append('file', file);
     return request<MediaItem>('/media', { method: 'POST', body: form });
   },
-  deleteMedia: (id: string) => request<void>(`/media/${id}`, { method: 'DELETE' }),
+  deleteMedia: (id: string, force = false) => request<void>(`/media/${id}${force ? '?force=1' : ''}`, { method: 'DELETE' }),
+  /** Deletes uploads that no published content references and that are older than an hour. */
+  cleanupMedia: () => request<{ deleted: number }>('/media/cleanup?olderThanMinutes=60', { method: 'POST' }),
 
   listMessages: async () => (await request<{ items: ContactMessage[] }>('/messages')).items,
   deleteMessage: (id: string) => request<void>(`/messages/${id}`, { method: 'DELETE' }),

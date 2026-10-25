@@ -427,3 +427,37 @@ test.describe('B6: conflicting edits are never overwritten silently', () => {
     expect((await api.publicContent()).hero.tagline).toBe('Follow-up edit');
   });
 });
+
+test.describe('B19: deleting files the live site uses', () => {
+  test('asks twice before breaking the live site, and the cleanup button keeps used files', async ({ page, signIn, api }) => {
+    await signIn(page);
+    // an upload that the live site uses, and one nobody uses
+    const form = (name: string) => ({ file: { name, mimeType: 'image/png', buffer: PNG_BYTES } });
+    const headers = { Authorization: `Bearer ${api.token}` };
+    const used = await (await api.request.post('/api/admin/media', { headers, multipart: form('in-use.png') })).json();
+    await api.request.post('/api/admin/media', { headers, multipart: form('orphan.png') });
+    const { content } = await api.getContent();
+    content.profile.photoUrl = used.url;
+    await api.putContent(content);
+
+    await page.goto('/admin');
+    await openTab(page, 'Media');
+    await expect(page.locator('ul li', { hasText: 'in-use.png' })).toContainText('in use');
+
+    // Cleanup (age threshold is 1 hour in the UI, so brand-new files are protected)
+    page.once('dialog', (dialog) => void dialog.accept());
+    await page.getByRole('button', { name: 'Clean up unused' }).click();
+    await expect(toast(page, 'Nothing to clean up')).toBeVisible();
+
+    // Deleting the in-use file: first confirm, then a second warning
+    const messages: string[] = [];
+    page.on('dialog', (dialog) => {
+      messages.push(dialog.message());
+      void dialog.accept();
+    });
+    await page.locator('ul li', { hasText: 'in-use.png' }).getByRole('button', { name: 'Delete' }).click();
+    await expect(page.locator('ul li', { hasText: 'in-use.png' })).toHaveCount(0);
+    expect(messages).toHaveLength(2);
+    expect(messages[1]).toContain('used on the live site');
+  });
+});

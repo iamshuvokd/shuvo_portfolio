@@ -3,11 +3,12 @@ import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import { z } from 'zod';
 import { env } from '../config/env.js';
+import { keys, redis } from '../lib/redis.js';
 import { isValidPassword, requireAdmin, revokeToken, signAdminToken } from '../middleware/auth.js';
 import { asyncHandler, HttpError } from '../middleware/errors.js';
 import { contentSchema } from '../schemas/content.js';
 import { getContent, resetContent, saveContent } from '../services/content.service.js';
-import { allowedMime, deleteMedia, isValidFile, listMedia, saveMedia } from '../services/media.service.js';
+import { allowedMime, deleteMedia, deleteUnusedMedia, isValidFile, listMedia, referencedMediaIds, saveMedia } from '../services/media.service.js';
 import { listGithubRepos } from '../services/github.service.js';
 import { deleteMessage, listMessages } from '../services/messages.service.js';
 
@@ -112,11 +113,28 @@ adminRouter.post(
   }),
 );
 
+/** Raw stored document, used to find which uploads the live site still references. */
+const storedContentJson = async () => (await redis.get(keys.content)) ?? '';
+
 adminRouter.delete(
   '/media/:id',
   asyncHandler(async (req, res) => {
-    await deleteMedia(String(req.params.id));
+    const id = String(req.params.id);
+    // Refuse to break the live site by default; the admin can confirm with ?force=1.
+    if (req.query.force !== '1' && referencedMediaIds(await storedContentJson()).has(id.toLowerCase())) {
+      throw new HttpError(409, 'This file is used on the live site. Remove it from the content first, or delete it anyway.', { inUse: true });
+    }
+    await deleteMedia(id);
     res.status(204).end();
+  }),
+);
+
+/** Removes uploads no published content references (old replaced photos, abandoned uploads). */
+adminRouter.post(
+  '/media/cleanup',
+  asyncHandler(async (req, res) => {
+    const { olderThanMinutes } = z.object({ olderThanMinutes: z.coerce.number().min(0).max(525_600).default(60) }).parse(req.query);
+    res.json({ deleted: await deleteUnusedMedia(await storedContentJson(), olderThanMinutes) });
   }),
 );
 

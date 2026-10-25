@@ -60,3 +60,21 @@ export async function listMedia(): Promise<MediaMeta[]> {
 export async function deleteMedia(id: string): Promise<void> {
   await redis.multi().del(keys.media(id), keys.mediaMeta(id)).zrem(keys.mediaIndex, id).exec();
 }
+
+/** Extracts the ids of uploaded files referenced anywhere in a content document. */
+export function referencedMediaIds(contentJson: string): Set<string> {
+  return new Set([...contentJson.matchAll(/\/api\/media\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/gi)].map((match) => match[1].toLowerCase()));
+}
+
+/** Deletes files that no published content references and that are older than `olderThanMinutes`. */
+export async function deleteUnusedMedia(contentJson: string, olderThanMinutes: number): Promise<number> {
+  const used = referencedMediaIds(contentJson);
+  const cutoff = Date.now() - olderThanMinutes * 60_000;
+  let deleted = 0;
+  for (const item of await listMedia()) {
+    if (used.has(item.id.toLowerCase()) || item.createdAt > cutoff) continue;
+    await deleteMedia(item.id);
+    deleted += 1;
+  }
+  return deleted;
+}
