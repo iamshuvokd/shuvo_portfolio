@@ -132,3 +132,45 @@ test.describe('Contact form', () => {
     await expect(toast(page, 'Message failed')).toBeVisible();
   });
 });
+
+test.describe('B12: page weight', () => {
+  test('no oversized images are downloaded, and the favicon is tiny', async ({ page, request }) => {
+    const images: { url: string; bytes: number }[] = [];
+    page.on('response', async (response) => {
+      const type = response.headers()['content-type'] ?? '';
+      if (type.startsWith('image/') || /\.(png|jpe?g|webp|ico)(\?|$)/.test(response.url())) {
+        const body = await response.body().catch(() => Buffer.alloc(0));
+        images.push({ url: response.url().replace(/^https?:\/\/[^/]+/, ''), bytes: body.length });
+      }
+    });
+    await page.goto('/');
+    await page.waitForTimeout(2500);
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 600) {
+        window.scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    });
+    await page.waitForTimeout(1000);
+
+    const tooBig = images.filter((image) => image.bytes > 120 * 1024);
+    expect(tooBig, `images over 120 KB: ${JSON.stringify(tooBig)}`).toEqual([]);
+
+    const favicon = await request.get('/favicon.ico');
+    expect(favicon.status()).toBe(200);
+    expect((await favicon.body()).length).toBeLessThan(20 * 1024);
+  });
+
+  test('the header avatar uses the small image, not the full-size photo', async ({ page }) => {
+    await page.goto('/');
+    const src = await page.locator('header img').first().getAttribute('src');
+    expect(src).toMatch(/profile-sm/);
+    expect(await page.locator('#about aside img').getAttribute('src')).toMatch(/profile-md/);
+  });
+
+  test('declares proper favicon and touch icons', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('link[rel="icon"][href="/favicon.png"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(1);
+  });
+});

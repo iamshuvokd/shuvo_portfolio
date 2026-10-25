@@ -8,7 +8,7 @@ import { getIcon } from '@/lib/icons';
 const About = () => {
   const { content } = useContent();
   const { about, profile } = content;
-  const photo = useProfilePhoto();
+  const photo = useProfilePhoto('md');
   return (
     <section id="about" className="relative overflow-hidden px-4 py-12 sm:px-6 md:py-14 lg:px-8">
       <div className="hero-grid absolute inset-0 opacity-10" />

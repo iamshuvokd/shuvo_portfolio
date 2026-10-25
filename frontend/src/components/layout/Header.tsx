@@ -9,7 +9,7 @@ import { navLinks } from '@/data/navigation';
 
 const Header = () => {
   const { content } = useContent();
-  const photo = useProfilePhoto();
+  const photo = useProfilePhoto('sm');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('#home');

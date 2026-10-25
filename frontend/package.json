@@ -9,7 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "og:image": "node scripts/og-image.mjs"
+    "og:image": "node scripts/og-image.mjs",
+    "images": "node scripts/optimize-images.mjs",
+    "check:size": "node scripts/check-bundle-size.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
