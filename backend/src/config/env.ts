@@ -15,6 +15,11 @@ const schema = z.object({
   MAX_UPLOAD_MB: z.coerce.number().positive().default(8),
   /** Max admin login attempts per IP per 15 min. Keep low in production; raised for automated tests. */
   LOGIN_RATE_LIMIT: z.coerce.number().int().positive().default(10),
+  /** Max public read requests (content, media...) per IP per minute. Health checks and the live stream are exempt. */
+  PUBLIC_RATE_LIMIT: z.coerce.number().int().positive().default(300),
+  /** Max simultaneous live-update (SSE) connections from one IP, and across the whole server. */
+  SSE_MAX_PER_IP: z.coerce.number().int().positive().default(25), // generous: offices/campuses share one IP
+  SSE_MAX_TOTAL: z.coerce.number().int().positive().default(1000),
   /** Max contact-form submissions per IP per minute. */
   CONTACT_RATE_LIMIT: z.coerce.number().int().positive().default(5),
   /** Optional. Raises the GitHub API limit from 60 to 5000 requests/hour. Needs no scopes for public repos. */

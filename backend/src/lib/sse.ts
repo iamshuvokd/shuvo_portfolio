@@ -1,4 +1,5 @@
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
+import { env } from '../config/env.js';
 import { createSubscriber, keys } from './redis.js';
 
 /**
@@ -7,8 +8,20 @@ import { createSubscriber, keys } from './redis.js';
  * unchanged with several backend instances behind a load balancer.
  */
 const clients = new Set<Response>();
+const perIp = new Map<string, number>();
 
-export function addSseClient(res: Response, initial?: unknown) {
+/**
+ * Each open stream costs a socket and memory, so one machine (or the whole server) cannot open unlimited ones.
+ * Returns false (after answering 429) when a cap is hit.
+ */
+export function addSseClient(req: Request, res: Response, initial?: unknown): boolean {
+  const ip = req.ip ?? 'unknown';
+  if (clients.size >= env.SSE_MAX_TOTAL || (perIp.get(ip) ?? 0) >= env.SSE_MAX_PER_IP) {
+    res.status(429).set('Retry-After', '30').json({ error: 'Too many live connections. Close other tabs and retry.' });
+    return false;
+  }
+  perIp.set(ip, (perIp.get(ip) ?? 0) + 1);
+
   res.writeHead(200, {
     'Content-Type': 'text/event-stream; charset=utf-8',
     'Cache-Control': 'no-cache, no-transform',
@@ -19,7 +32,13 @@ export function addSseClient(res: Response, initial?: unknown) {
   if (initial !== undefined) res.write(`event: content\ndata: ${JSON.stringify(initial)}\n\n`);
 
   clients.add(res);
-  res.on('close', () => clients.delete(res));
+  res.on('close', () => {
+    clients.delete(res);
+    const left = (perIp.get(ip) ?? 1) - 1;
+    if (left <= 0) perIp.delete(ip);
+    else perIp.set(ip, left);
+  });
+  return true;
 }
 
 export function startSseHub() {

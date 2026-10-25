@@ -129,3 +129,19 @@ test.describe('B4: very long text cannot break the layout', () => {
     expect(height).toBeLessThan(90);
   });
 });
+
+test.describe('B7: a refused live stream degrades to polling instead of going stale', () => {
+  test('when /content/stream answers 429, the page still picks up published changes by polling', async ({ page, api }) => {
+    await page.route('**/api/content/stream', (route) =>
+      route.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ error: 'Too many live connections.' }) }),
+    );
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Shuvo');
+
+    const { content } = await api.getContent();
+    content.hero.tagline = `Delivered by polling ${Date.now()}`;
+    await api.putContent(content);
+
+    await expect(page.locator('#home')).toContainText(content.hero.tagline, { timeout: 20_000 });
+  });
+});

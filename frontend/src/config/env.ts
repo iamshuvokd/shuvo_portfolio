@@ -10,6 +10,8 @@ export const env = {
    * In production set VITE_API_URL (e.g. https://api.example.com/api); empty = static content only.
    */
   apiUrl: configuredApiUrl ?? (import.meta.env.DEV ? '/api' : ''),
+  /** How often to poll when the live stream is refused. Overridable so tests need not wait a minute. */
+  pollFallbackMs: Number(import.meta.env.VITE_POLL_FALLBACK_MS) || 60_000,
   emailjs: {
     serviceId: (import.meta.env.VITE_EMAILJS_SERVICE_ID as string | undefined) ?? 'service_5kjhg5i',
     templateId: (import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string | undefined) ?? 'template_q7bmc9d',

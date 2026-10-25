@@ -11,6 +11,18 @@ import { redis } from '../lib/redis.js';
 
 export const publicRouter = Router();
 
+/** General guard for public reads. Health checks (monitors) and the stream (has its own caps) are exempt. */
+const publicLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: env.PUBLIC_RATE_LIMIT,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  skip: (req) => req.path === '/health' || req.path === '/content/stream',
+  message: { error: 'Too many requests, please slow down.' },
+});
+
+publicRouter.use(publicLimiter);
+
 const contactLimiter = rateLimit({
   windowMs: 60_000,
   limit: env.CONTACT_RATE_LIMIT,
@@ -44,8 +56,8 @@ publicRouter.get(
 /** Live updates: the browser opens this once and receives every published change. */
 publicRouter.get(
   '/content/stream',
-  asyncHandler(async (_req, res) => {
-    addSseClient(res, await getContent());
+  asyncHandler(async (req, res) => {
+    addSseClient(req, res, await getContent());
   }),
 );
 

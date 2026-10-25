@@ -60,6 +60,8 @@ export default defineConfig({
         // Relaxed so the suite can sign in / post many times within a minute.
         LOGIN_RATE_LIMIT: '1000',
         CONTACT_RATE_LIMIT: '20',
+        PUBLIC_RATE_LIMIT: '100000',
+        SSE_MAX_PER_IP: '100',
         GITHUB_TOKEN: '',
       },
     },
@@ -70,7 +72,7 @@ export default defineConfig({
       url: WEB_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
-      env: { API_PROXY_TARGET: API_URL },
+      env: { API_PROXY_TARGET: API_URL, VITE_POLL_FALLBACK_MS: '2000' },
     },
   ],
 });
