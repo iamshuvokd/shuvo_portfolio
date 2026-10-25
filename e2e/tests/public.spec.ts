@@ -79,9 +79,26 @@ test.describe('Public site', () => {
     expect((await res.body()).length).toBeLessThan(300 * 1024);
   });
 
-  test('robots.txt keeps the admin out of search engines', async ({ request, page }) => {
+  test('robots.txt keeps /admin away from EVERY crawler (named groups do not inherit the * group)', async ({ request, page }) => {
     const robots = await (await request.get('/robots.txt')).text();
-    expect(robots).toContain('Disallow: /admin');
+
+    // Parse into groups the way crawlers do: consecutive User-agent lines open a group, rules follow.
+    const groups: { agents: string[]; rules: string[] }[] = [];
+    for (const line of robots.split(String.fromCharCode(10)).map((l) => l.replace(/#.*/, '').trim()).filter(Boolean)) {
+      const [field, ...rest] = line.split(':');
+      const value = rest.join(':').trim();
+      if (field.toLowerCase() === 'user-agent') {
+        const last = groups[groups.length - 1];
+        if (last && last.rules.length === 0) last.agents.push(value);
+        else groups.push({ agents: [value], rules: [] });
+      } else groups[groups.length - 1]?.rules.push(`${field.toLowerCase()}:${value}`);
+    }
+
+    expect(groups.length).toBeGreaterThan(0);
+    for (const group of groups) {
+      expect(group.rules, `group for ${group.agents.join(', ')}`).toContain('disallow:/admin');
+      expect(group.rules).not.toContain('disallow:/'); // the public site stays crawlable
+    }
 
     await page.goto('/admin');
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);

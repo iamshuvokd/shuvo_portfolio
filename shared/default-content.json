@@ -88,8 +88,8 @@
         "impact": "Reduced response time by 70%",
         "description": "NLP-powered assistant for medical queries and appointment workflows, built with a production-minded API and frontend experience.",
         "tech": ["Python", "TensorFlow", "React", "FastAPI"],
-        "github": "https://github.com/shuvookd/ATL_Bot",
-        "demo": "https://github.com/shuvookd/ATL_Bot"
+        "github": "",
+        "demo": ""
       },
       {
         "title": "Guest Management Solution",
