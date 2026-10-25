@@ -390,3 +390,40 @@ test.describe('B9: footer clock shows exactly the location you set', () => {
     expect((await api.publicContent()).profile.timeZone).toBe('Europe/London');
   });
 });
+
+test.describe('B6: conflicting edits are never overwritten silently', () => {
+  test('warns when someone else published first; Cancel keeps their version, OK overwrites', async ({ page, signIn, api }) => {
+    await signIn(page);
+    await page.goto('/admin');
+    await openTab(page, 'Hero');
+    await page.getByLabel('Tagline').fill('My edit (older revision)');
+
+    // Meanwhile another admin (or tab) publishes a change.
+    const other = (await api.getContent()).content;
+    other.hero.tagline = 'Their edit (newer)';
+    expect((await api.putContent(other)).status()).toBe(200);
+
+    // First attempt: the admin declines to overwrite.
+    let message = '';
+    page.once('dialog', (dialog) => {
+      message = dialog.message();
+      void dialog.dismiss();
+    });
+    await page.getByRole('button', { name: /Save & publish/ }).click();
+    await expect(toast(page, 'Not saved')).toBeVisible();
+    expect(message).toContain('changed by someone else');
+    expect((await api.publicContent()).hero.tagline).toBe('Their edit (newer)');
+    await expect(page.getByText('Unsaved changes')).toBeVisible(); // work is kept, not lost
+
+    // Second attempt: the admin chooses to overwrite.
+    page.once('dialog', (dialog) => void dialog.accept());
+    await page.getByRole('button', { name: /Save & publish/ }).click();
+    await expect(page.getByText('All changes published')).toBeVisible();
+    expect((await api.publicContent()).hero.tagline).toBe('My edit (older revision)');
+
+    // After a successful save the editor tracks the new revision: next save needs no prompt.
+    await page.getByLabel('Tagline').fill('Follow-up edit');
+    await publish(page);
+    expect((await api.publicContent()).hero.tagline).toBe('Follow-up edit');
+  });
+});

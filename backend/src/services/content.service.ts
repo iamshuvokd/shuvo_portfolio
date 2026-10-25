@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { keys, redis } from '../lib/redis.js';
+import { HttpError } from '../middleware/errors.js';
 import { contentSchema, type SiteContent } from '../schemas/content.js';
 
 const defaultsUrl = new URL('../../../shared/default-content.json', import.meta.url);
@@ -43,11 +44,38 @@ export async function getContent(): Promise<{ content: SiteContent; revision: nu
   return { content: parsed.data, revision };
 }
 
-/** Persists content and notifies every connected server/visitor through Redis pub/sub. */
-export async function saveContent(content: SiteContent): Promise<number> {
-  const results = await redis.multi().set(keys.content, JSON.stringify(content)).incr(keys.revision).exec();
+/**
+ * Compare-and-set in one atomic step: if the caller says which revision it edited and the stored revision
+ * differs, nothing is written. A Lua script keeps two simultaneous saves from both passing the check.
+ */
+const SAVE_IF_CURRENT = `
+local current = tonumber(redis.call('GET', KEYS[2]) or '0')
+if ARGV[2] ~= '' and tonumber(ARGV[2]) ~= current then
+  return {-1, current}
+end
+redis.call('SET', KEYS[1], ARGV[1])
+local revision = redis.call('INCR', KEYS[2])
+return {revision, revision}
+`;
 
-  const revision = Number(results?.[1]?.[1] ?? 0);
+/**
+ * Persists content and notifies every connected server/visitor through Redis pub/sub.
+ * Pass `expectedRevision` (the revision the editor loaded) to refuse overwriting someone else's newer save.
+ */
+export async function saveContent(content: SiteContent, expectedRevision?: number): Promise<number> {
+  const [revision, current] = (await redis.eval(
+    SAVE_IF_CURRENT,
+    2,
+    keys.content,
+    keys.revision,
+    JSON.stringify(content),
+    expectedRevision === undefined ? '' : String(expectedRevision),
+  )) as [number, number];
+
+  if (revision === -1) {
+    throw new HttpError(409, 'The content was changed by someone else since you opened it.', { revision: current });
+  }
+
   await redis.publish(keys.channel, JSON.stringify({ type: 'content', revision, content }));
   return revision;
 }

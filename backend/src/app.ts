@@ -26,7 +26,7 @@ export function createApp() {
         const allowed = !origin || env.corsOrigins.includes(origin) || (!env.isProd && localOrigin.test(origin));
         callback(null, allowed);
       },
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Content-Revision'],
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
     }),
   );

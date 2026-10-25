@@ -4,7 +4,7 @@ import multer from 'multer';
 import { z } from 'zod';
 import { env } from '../config/env.js';
 import { isValidPassword, requireAdmin, revokeToken, signAdminToken } from '../middleware/auth.js';
-import { asyncHandler } from '../middleware/errors.js';
+import { asyncHandler, HttpError } from '../middleware/errors.js';
 import { contentSchema } from '../schemas/content.js';
 import { getContent, resetContent, saveContent } from '../services/content.service.js';
 import { allowedMime, deleteMedia, isValidFile, listMedia, saveMedia } from '../services/media.service.js';
@@ -64,11 +64,18 @@ adminRouter.get(
   }),
 );
 
+/** Optional `X-Content-Revision` header = the revision the editor started from (optimistic concurrency). */
+function parseExpectedRevision(header: string | undefined): number | undefined {
+  if (header === undefined || header === '') return undefined;
+  if (!/^\d+$/.test(header)) throw new HttpError(400, 'X-Content-Revision must be a whole number');
+  return Number(header);
+}
+
 adminRouter.put(
   '/content',
   asyncHandler(async (req, res) => {
     const content = contentSchema.parse(req.body);
-    const revision = await saveContent(content);
+    const revision = await saveContent(content, parseExpectedRevision(req.header('x-content-revision')));
     res.json({ revision });
   }),
 );

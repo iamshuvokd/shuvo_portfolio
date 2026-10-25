@@ -7,6 +7,8 @@ export class HttpError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    /** Extra fields merged into the JSON error body (e.g. the current revision on a 409). */
+    public readonly extra: Record<string, unknown> = {},
   ) {
     super(message);
   }
@@ -32,7 +34,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
     return;
   }
   if (error instanceof HttpError) {
-    res.status(error.status).json({ error: error.message });
+    res.status(error.status).json({ error: error.message, ...error.extra });
     return;
   }
   if (error instanceof multer.MulterError) {

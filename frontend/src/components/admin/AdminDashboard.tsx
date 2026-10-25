@@ -28,6 +28,8 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const { toast } = useToast();
   const [draft, setDraft] = useState<SiteContent | null>(null);
   const [savedJson, setSavedJson] = useState('');
+  /** Revision of the content this draft is based on; sent with every save to detect conflicting edits. */
+  const [revision, setRevision] = useState<number | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [loadError, setLoadError] = useState('');
 
@@ -45,8 +47,9 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   useEffect(() => {
     adminApi
       .getContent()
-      .then(({ content }) => {
+      .then(({ content, revision: loadedRevision }) => {
         setDraft(content);
+        setRevision(loadedRevision);
         setSavedJson(serializeContent(content));
       })
       .catch((error) => {
@@ -63,8 +66,24 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
     setSaving(true);
     try {
       const cleaned = cleanContent(draft);
-      await adminApi.saveContent(cleaned);
+      let result: { revision: number };
+      try {
+        result = await adminApi.saveContent(cleaned, revision);
+      } catch (error) {
+        // 409: someone else published after this editor was opened. Never overwrite silently.
+        if (!(error instanceof ApiError && error.status === 409)) throw error;
+        const overwrite = window.confirm(
+          'The site content was changed by someone else (another tab or admin) after you opened this page.\n\n' +
+            'OK = overwrite their changes with yours.\nCancel = keep editing (copy your work, then reload to see the latest).',
+        );
+        if (!overwrite) {
+          toast({ title: 'Not saved', description: 'Newer changes exist. Reload the page to see them.', variant: 'destructive' });
+          return;
+        }
+        result = await adminApi.saveContent(cleaned); // deliberate overwrite: no revision check
+      }
       setDraft(cleaned);
+      setRevision(result.revision);
       setSavedJson(JSON.stringify(cleaned));
       toast({ title: 'Published', description: 'Your changes are live on the site now.' });
     } catch (error) {
@@ -72,13 +91,14 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
     } finally {
       setSaving(false);
     }
-  }, [draft, saving, toast, handleError]);
+  }, [draft, saving, revision, toast, handleError]);
 
   const reset = async () => {
     if (!window.confirm('Reset ALL content back to the built-in defaults? This publishes immediately and cannot be undone.')) return;
     try {
       await adminApi.resetContent();
-      const { content } = await adminApi.getContent();
+      const { content, revision: latest } = await adminApi.getContent();
+      setRevision(latest);
       setDraft(content);
       setSavedJson(serializeContent(content));
       toast({ title: 'Reset', description: 'Content restored to defaults.' });

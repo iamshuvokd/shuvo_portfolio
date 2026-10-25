@@ -67,7 +67,13 @@ export const adminApi = {
     const data = await request<{ content: SiteContent; revision: number }>('/content');
     return { content: withDefaults(data.content), revision: data.revision };
   },
-  saveContent: (content: SiteContent) => request<{ revision: number }>('/content', { method: 'PUT', json: content }),
+  /** `revision` = the revision this edit started from; the server answers 409 if someone saved in between. */
+  saveContent: (content: SiteContent, revision?: number) =>
+    request<{ revision: number }>('/content', {
+      method: 'PUT',
+      json: content,
+      headers: revision === undefined ? undefined : { 'X-Content-Revision': String(revision) },
+    }),
   resetContent: () => request<{ revision: number }>('/content/reset', { method: 'POST' }),
 
   listMedia: async () => (await request<{ items: MediaItem[] }>('/media')).items.map(withUrl),
