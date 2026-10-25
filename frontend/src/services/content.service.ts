@@ -1,13 +1,11 @@
 import { env } from '@/config/env';
 import { defaultContent } from '@/lib/default-content';
 import type { SiteContent } from '@/types/content';
+import { deepMerge } from '@/lib/merge';
 import { http } from './http';
 
-/** Fills any section the server omitted with built-in defaults, so the UI can never crash on a partial document. */
-export const withDefaults = (incoming: Partial<SiteContent> | undefined | null): SiteContent => ({
-  ...defaultContent,
-  ...(incoming ?? {}),
-});
+/** Fills anything missing or mistyped (at any depth) from the built-in defaults, so the UI can never crash on a partial document. */
+export const withDefaults = (incoming: unknown): SiteContent => deepMerge(defaultContent, incoming);
 
 export async function fetchContent(): Promise<SiteContent> {
   const data = await http<{ content: SiteContent }>('/content');

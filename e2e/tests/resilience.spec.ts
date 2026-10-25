@@ -39,7 +39,7 @@ test.describe('B1: a bad value can never blank the whole site', () => {
 
   test('a section that throws is contained; the rest of the page still renders', async ({ page, api }) => {
     const content = await api.publicContent();
-    content.projects = null; // makes the Projects section throw while rendering
+    content.projects.items = [null]; // a list entry that is not an object makes the Projects section throw
     await loadWithCachedContent(page, content);
 
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Shuvo');
@@ -56,5 +56,36 @@ test.describe('B1: a bad value can never blank the whole site', () => {
     await expect(page.getByRole('alert').filter({ hasText: 'Not a valid time zone' })).toBeVisible();
     await page.getByLabel('Time zone (IANA)').fill('Asia/Dhaka');
     await expect(page.getByRole('alert').filter({ hasText: 'Not a valid time zone' })).toHaveCount(0);
+  });
+});
+
+test.describe('B2: old or partial cached content cannot crash the site', () => {
+  test('a cached hero without metrics is healed from the defaults', async ({ page }) => {
+    const pageErrors = await loadWithCachedContent(page, {
+      hero: { badge: 'Old cached badge', greeting: 'Hi', firstName: 'Cached', roles: ['Dev'], tagline: 'Old tagline' },
+    });
+
+    expect(pageErrors, pageErrors.join(String.fromCharCode(10))).toEqual([]);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Cached'); // cached values still win
+    await expect(page.locator('#home')).toContainText('Years building systems'); // missing metrics came from defaults
+    await expect(page.locator('#projects h3')).toHaveCount(4);
+  });
+
+  test('wrongly typed or null cached sections fall back to defaults', async ({ page }) => {
+    const pageErrors = await loadWithCachedContent(page, { projects: null, skills: 'oops', profile: { social: null }, hero: [] });
+
+    expect(pageErrors, pageErrors.join(String.fromCharCode(10))).toEqual([]);
+    await expect(page.locator('#projects h3')).toHaveCount(4);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Shuvo');
+  });
+
+  test('garbage in localStorage is ignored', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('portfolio:content:v1', '{not json'));
+    await page.route('**/api/**', (route) => route.abort());
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Shuvo');
+    expect(pageErrors).toEqual([]);
   });
 });

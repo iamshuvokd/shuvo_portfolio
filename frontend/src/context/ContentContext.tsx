@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { env } from '@/config/env';
 import { defaultContent } from '@/lib/default-content';
-import { fetchContent, subscribeToContent } from '@/services/content.service';
+import { fetchContent, subscribeToContent, withDefaults } from '@/services/content.service';
 import type { SiteContent } from '@/types/content';
 import { ContentContext } from './content-context';
 
@@ -10,7 +10,7 @@ const CACHE_KEY = 'portfolio:content:v1';
 const readCache = (): SiteContent => {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
-    if (raw) return { ...defaultContent, ...(JSON.parse(raw) as Partial<SiteContent>) };
+    if (raw) return withDefaults(JSON.parse(raw));
   } catch {
     // storage unavailable or corrupt: fall back to built-in defaults
   }
