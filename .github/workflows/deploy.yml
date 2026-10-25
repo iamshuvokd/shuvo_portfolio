@@ -1,0 +1,185 @@
+name: Deploy
+
+# Continuous delivery: when CI passes on main, build the images, publish them, update the server, and verify.
+# It never runs for pull requests or for a red CI. You can also run it by hand (Actions tab -> Deploy -> Run workflow),
+# e.g. to redeploy or to roll back to an older commit.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git commit SHA (or branch) to deploy. Leave empty for the latest main.
+        required: false
+        default: ""
+
+# Never run two deployments at once, and never cancel one halfway through.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write # publish images to GitHub Container Registry with the built-in token
+
+env:
+  REGISTRY: ghcr.io
+  # Image names must be lowercase. Result: ghcr.io/<owner>/<repo>-api and -web
+  IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+
+jobs:
+  resolve:
+    name: Decide what to deploy
+    runs-on: ubuntu-latest
+    # Automatic runs only for a successful CI that was triggered by a push (not a pull request).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    outputs:
+      sha: ${{ steps.pick.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.event.workflow_run.head_sha || 'main' }}
+      - id: pick
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  images:
+    name: Build & publish ${{ matrix.name }} image
+    needs: resolve
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: api
+            file: backend/Dockerfile
+          - name: web
+            file: frontend/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: names
+        # docker requires lowercase repository names
+        run: echo "image=$(echo '${{ env.IMAGE_PREFIX }}-${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.file }}
+          push: true
+          # sha = immutable version you can roll back to; latest = convenience pointer.
+          tags: |
+            ${{ steps.names.outputs.image }}:${{ needs.resolve.outputs.sha }}
+            ${{ steps.names.outputs.image }}:latest
+          build-args: |
+            SITE_URL=${{ vars.SITE_URL }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,scope=${{ matrix.name }},mode=max
+
+  deploy:
+    name: Update the server
+    needs: [resolve, images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # "production" is a GitHub Environment: you can add required reviewers or a wait timer to it in
+    # Settings -> Environments, turning this into a one-click approval if you prefer.
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    env:
+      SHA: ${{ needs.resolve.outputs.sha }}
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - name: Check deployment secrets
+        id: gate
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ] || [ -z "$DEPLOY_PATH" ] || [ -z "${{ secrets.DEPLOY_SSH_KEY }}" ]; then
+            echo "::notice::DEPLOY_HOST / DEPLOY_USER / DEPLOY_PATH / DEPLOY_SSH_KEY are not all set. Images were published, but no server was updated. See docs/CICD.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          ref: ${{ env.SHA }}
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Trust the server's host key
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          if [ -n "${{ secrets.DEPLOY_KNOWN_HOSTS }}" ]; then
+            echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts      # pinned key: safest
+          else
+            ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts               # trust on first use
+          fi
+
+      - name: Upload deployment files
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" bash -s -- "$DEPLOY_PATH" <<'REMOTE'
+          mkdir -p "$1"
+          REMOTE
+          scp deploy/docker-compose.yml deploy/Caddyfile deploy/deploy.sh "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+
+      - name: Pull the new images and restart
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          # Short-lived token of THIS run (expires when the run ends); used to log in to the registry.
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_USER: ${{ github.actor }}
+        run: |
+          IMAGE_PREFIX_LC="$(echo "$IMAGE_PREFIX" | tr '[:upper:]' '[:lower:]')"
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" bash -s -- "$DEPLOY_PATH" "$SHA" "$IMAGE_PREFIX_LC" "$REGISTRY" "$REGISTRY_USER" "$REGISTRY_TOKEN" <<'REMOTE'
+          set -euo pipefail
+          deploy_path="$1"; sha="$2"; image_prefix="$3"; registry="$4"; user="$5"; token="$6"
+          printf '%s' "$token" | docker login "$registry" -u "$user" --password-stdin
+          cd "$deploy_path"
+          chmod +x deploy.sh
+          IMAGE_PREFIX="$image_prefix" IMAGE_TAG="$sha" ./deploy.sh
+          REMOTE
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.ready == 'true' && vars.SITE_URL != ''
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Smoke-test the live site
+        if: steps.gate.outputs.ready == 'true' && vars.SITE_URL != ''
+        env:
+          SMOKE_URL: ${{ vars.SITE_URL }}
+          CI: "true"
+        run: |
+          npm --prefix e2e ci
+          npx --prefix e2e playwright install --with-deps chromium
+          npm --prefix e2e run test:smoke
+
+      - name: Upload the smoke report
+        if: failure() && steps.gate.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-report
+          path: e2e/smoke-report
+          retention-days: 7
