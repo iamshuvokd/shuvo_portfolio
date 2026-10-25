@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import AdminLogin from '@/components/admin/AdminLogin';
 import { env } from '@/config/env';
-import { clearToken, getToken } from '@/services/admin.service';
+import { adminApi, getToken } from '@/services/admin.service';
 
 const Admin = () => {
   const [signedIn, setSignedIn] = useState(() => Boolean(getToken()));
@@ -22,7 +22,7 @@ const Admin = () => {
   }, []);
 
   const logout = useCallback(() => {
-    clearToken();
+    void adminApi.logout(); // revoke on the server; the UI does not wait for it
     setSignedIn(false);
   }, []);
 

@@ -22,8 +22,14 @@ const contactLimiter = rateLimit({
 publicRouter.get(
   '/health',
   asyncHandler(async (_req, res) => {
-    const redisOk = (await redis.ping()) === 'PONG';
-    res.json({ status: 'ok', redis: redisOk, liveClients: connectedClients() });
+    // A health check must report trouble, not fail with a generic 500, so monitors and load balancers can act on it.
+    let redisOk = false;
+    try {
+      redisOk = (await redis.ping()) === 'PONG';
+    } catch {
+      redisOk = false;
+    }
+    res.status(redisOk ? 200 : 503).json({ status: redisOk ? 'ok' : 'degraded', redis: redisOk, liveClients: connectedClients() });
   }),
 );
 

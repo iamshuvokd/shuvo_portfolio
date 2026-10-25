@@ -55,6 +55,13 @@ export const adminApi = {
     const { token } = await request<{ token: string }>('/login', { method: 'POST', json: { password } });
     setToken(token);
   },
+  /** Revokes the token on the server first, then forgets it locally. Never blocks sign-out when the server is unreachable. */
+  async logout() {
+    // Start the request first (it reads the token synchronously), then forget the token right away.
+    const revoked = request<void>('/logout', { method: 'POST' }).catch(() => undefined); // offline/expired: ignore
+    clearToken();
+    await revoked;
+  },
   verifySession: () => request<{ ok: true }>('/session'),
   async getContent() {
     const data = await request<{ content: SiteContent; revision: number }>('/content');

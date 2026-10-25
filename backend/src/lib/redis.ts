@@ -23,5 +23,6 @@ export const keys = {
   mediaMeta: (id: string) => `portfolio:media:${id}:meta`,
   messages: 'portfolio:messages',
   messageOrder: 'portfolio:messages:order',
+  revokedToken: (jti: string) => `portfolio:revoked:${jti}`,
   githubRepos: (user: string) => `portfolio:github:${user.toLowerCase()}`,
 };

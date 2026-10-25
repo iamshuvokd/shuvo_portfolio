@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import { z } from 'zod';
 import { env } from '../config/env.js';
-import { isValidPassword, requireAdmin, signAdminToken } from '../middleware/auth.js';
+import { isValidPassword, requireAdmin, revokeToken, signAdminToken } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/errors.js';
 import { contentSchema } from '../schemas/content.js';
 import { getContent, resetContent, saveContent } from '../services/content.service.js';
@@ -18,6 +18,8 @@ const loginLimiter = rateLimit({
   limit: env.LOGIN_RATE_LIMIT,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
+  // Only failed attempts count: signing in and out repeatedly must not lock the owner out.
+  skipSuccessfulRequests: true,
   message: { error: 'Too many login attempts. Try again later.' },
 });
 
@@ -41,6 +43,14 @@ adminRouter.post(
 
 // Everything below requires a valid admin token.
 adminRouter.use(requireAdmin);
+
+adminRouter.post(
+  '/logout',
+  asyncHandler(async (req, res) => {
+    await revokeToken(req);
+    res.status(204).end();
+  }),
+);
 
 adminRouter.get('/session', (_req, res) => {
   res.json({ ok: true });
