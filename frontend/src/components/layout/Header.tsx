@@ -72,14 +72,14 @@ const Header = () => {
               event.preventDefault();
               scrollToSection('#home');
             }}
-            className="flex items-center gap-3 text-base font-semibold text-foreground transition-colors hover:text-primary sm:text-lg"
+            className="flex min-w-0 max-w-[15rem] items-center gap-3 text-base font-semibold text-foreground transition-colors hover:text-primary sm:max-w-xs sm:text-lg"
           >
             <img
               src={photo}
               alt={content.profile.name}
-              className="h-9 w-9 rounded-lg border border-primary/20 object-cover"
+              className="h-9 w-9 shrink-0 rounded-lg border border-primary/20 object-cover"
             />
-            <span>{content.profile.name}</span>
+            <span className="truncate">{content.profile.name}</span>
           </a>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">

@@ -89,3 +89,43 @@ test.describe('B2: old or partial cached content cannot crash the site', () => {
     expect(pageErrors).toEqual([]);
   });
 });
+
+test.describe('B4: very long text cannot break the layout', () => {
+  test('long names, titles, descriptions and emails stay inside a phone screen', async ({ page, api }) => {
+    const { content } = await api.getContent();
+    content.profile.name = 'Shuvo Kumar Das-Chowdhury-Bhattacharya-Mukhopadhyay';
+    content.profile.email = `${'e'.repeat(60)}@example.com`;
+    content.projects.items[1].title = `${'W'.repeat(60)}Extraordinarylongprojecttitlewithoutanyspaces`;
+    content.projects.items[1].description = 'x'.repeat(1900);
+    content.projects.items[1].tech = ['T'.repeat(40)];
+    content.experience.items[0].company = `Apptriangle${'X'.repeat(70)}`;
+    expect((await api.putContent(content)).status()).toBe(200);
+
+    for (const width of [320, 375, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/');
+      await page.waitForTimeout(1200);
+
+      const report = await page.evaluate(() => {
+        const limit = window.innerWidth + 1;
+        const offenders = ['header > div > div', '#projects article', '#experience article', '#contact h2', '#contact form', 'footer section']
+          .flatMap((selector) => [...document.querySelectorAll(selector)].map((el) => ({ selector, right: Math.round(el.getBoundingClientRect().right) })))
+          .filter((item) => item.right > limit);
+        return { scrollWidth: document.documentElement.scrollWidth, innerWidth: window.innerWidth, offenders };
+      });
+
+      expect(report.offenders, `${width}px: ${JSON.stringify(report.offenders)}`).toEqual([]);
+      expect(report.scrollWidth).toBeLessThanOrEqual(report.innerWidth + 1);
+    }
+  });
+
+  test('the header keeps one line and shows the name truncated', async ({ page, api }) => {
+    const { content } = await api.getContent();
+    content.profile.name = 'A'.repeat(100);
+    await api.putContent(content);
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto('/');
+    const height = await page.locator('header > div > div').first().evaluate((el) => el.getBoundingClientRect().height);
+    expect(height).toBeLessThan(90);
+  });
+});

@@ -48,6 +48,12 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  /* Tailwind's break-words uses `break-word`, which does not shrink min-content, so a long word still widens
+     its grid column. `anywhere` does. Same visual result, no layout blow-out. */
+  .break-words {
+    overflow-wrap: anywhere;
+  }
+
   .glow-effect {
     box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.3);
     transition: box-shadow 0.3s ease;
@@ -159,6 +165,12 @@ All colors MUST be HSL.
     outline: 2px solid hsl(var(--primary));
     outline-offset: 3px;
     border-radius: 6px;
+  }
+
+  /* Admin-edited text can contain very long words. Without this they stretch grid columns
+     (a 150-character title made a project card ~1700px wide on a phone). */
+  body {
+    overflow-wrap: anywhere;
   }
 
   body {
