@@ -119,7 +119,7 @@ jobs:
         with:
           ref: ${{ env.SHA }}
 
-      - uses: webfactory/ssh-agent@v0.9.0
+      - uses: webfactory/ssh-agent@v0.10.0
         if: steps.gate.outputs.ready == 'true'
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
