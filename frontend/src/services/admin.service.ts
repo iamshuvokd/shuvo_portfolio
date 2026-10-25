@@ -91,7 +91,7 @@ export const adminApi = {
 
   async listGithubRepos(username: string, refresh = false) {
     const query = new URLSearchParams({ username, ...(refresh ? { refresh: '1' } : {}) });
-    return (await request<{ items: GithubRepo[] }>(`/github/repos?${query}`)).items;
+    return request<{ items: GithubRepo[]; truncated?: boolean }>(`/github/repos?${query}`);
   },
 };
 

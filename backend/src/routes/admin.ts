@@ -159,6 +159,6 @@ adminRouter.get(
     const { username, refresh } = z
       .object({ username: z.string().trim().min(1).max(39), refresh: z.enum(['1', '0']).optional() })
       .parse(req.query);
-    res.json({ items: await listGithubRepos(username, refresh === '1') });
+    res.json(await listGithubRepos(username, refresh === '1'));
   }),
 );

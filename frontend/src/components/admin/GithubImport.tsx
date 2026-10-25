@@ -35,6 +35,7 @@ const GithubImport = ({
   const { toast } = useToast();
   const [username, setUsername] = useState(() => readSavedUser() || guessGithubOwner([], profileGithubUrl) || guessGithubOwner(items));
   const [repos, setRepos] = useState<GithubRepo[] | null>(null);
+  const [truncated, setTruncated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [query, setQuery] = useState('');
@@ -45,8 +46,9 @@ const GithubImport = ({
     if (!user) return;
     setLoading(true);
     try {
-      const list = await adminApi.listGithubRepos(user, refresh);
+      const { items: list, truncated: cut = false } = await adminApi.listGithubRepos(user, refresh);
       setRepos(list);
+      setTruncated(cut);
       setSelected(new Set());
       try {
         localStorage.setItem(USERNAME_KEY, user);
@@ -148,6 +150,12 @@ const GithubImport = ({
               Hide forks
             </label>
           </div>
+
+          {truncated && (
+            <p role="status" className="rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-sm text-accent">
+              This account has more than {repos.length} repositories. Only the most recently updated ones are listed; use the filter or add the rest by hand.
+            </p>
+          )}
 
           <ul className="max-h-[26rem] space-y-2 overflow-y-auto rounded-xl border border-border/70 bg-background/30 p-2">
             {visible.length === 0 && <li className="p-4 text-sm text-muted-foreground">No repositories match.</li>}

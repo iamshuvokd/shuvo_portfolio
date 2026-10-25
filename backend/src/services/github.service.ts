@@ -82,24 +82,35 @@ async function fetchPage(username: string, page: number): Promise<RawRepo[]> {
   return (await response.json()) as RawRepo[];
 }
 
+export interface RepoList {
+  items: GithubRepo[];
+  /** True when the account has more repositories than we fetch (MAX_PAGES x 100). */
+  truncated: boolean;
+}
+
 /** Lists a user's public repositories (cached in Redis for 5 minutes to protect the rate limit). */
-export async function listGithubRepos(username: string, refresh = false): Promise<GithubRepo[]> {
+export async function listGithubRepos(username: string, refresh = false): Promise<RepoList> {
   if (!USERNAME.test(username)) throw new HttpError(400, 'Enter a valid GitHub username.');
 
   const cacheKey = keys.githubRepos(username);
   if (!refresh) {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached) as GithubRepo[];
+    if (cached) {
+      const parsed = JSON.parse(cached) as RepoList | GithubRepo[];
+      return Array.isArray(parsed) ? { items: parsed, truncated: false } : parsed; // older cache entries were plain arrays
+    }
   }
 
   const raw: RawRepo[] = [];
+  let truncated = false;
   for (let page = 1; page <= MAX_PAGES; page += 1) {
     const batch = await fetchPage(username, page);
     raw.push(...batch);
     if (batch.length < 100) break;
+    truncated = page === MAX_PAGES; // a full last page means there may be more we did not fetch
   }
 
-  const repos = raw.filter((repo) => !repo.private).map(toRepo);
-  await redis.set(cacheKey, JSON.stringify(repos), 'EX', CACHE_SECONDS);
-  return repos;
+  const result: RepoList = { items: raw.filter((repo) => !repo.private).map(toRepo), truncated };
+  await redis.set(cacheKey, JSON.stringify(result), 'EX', CACHE_SECONDS);
+  return result;
 }
