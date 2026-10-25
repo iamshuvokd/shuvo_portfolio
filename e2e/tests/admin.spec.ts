@@ -242,8 +242,12 @@ test.describe('Admin: files (CV, photo, media library)', () => {
     await publish(page);
     await expect.poll(async () => (await api.publicContent()).profile.cvUrl).toBe(cvUrl);
 
-    const [cvPage] = await Promise.all([context.waitForEvent('page'), site.getByRole('button', { name: 'Download CV' }).click()]);
-    await cvPage.waitForURL(new RegExp(cvUrl.replace(/[/]/g, '\\/')));
+    // Windows Edge renders a PDF in a tab; Linux headless Chromium (CI) downloads it instead and never "navigates".
+    // Either way the browser must REQUEST the uploaded file, so assert on the request, not on navigation.
+    const requested: string[] = [];
+    context.on('request', (request) => requested.push(request.url()));
+    await Promise.all([context.waitForEvent('page'), site.getByRole('button', { name: 'Download CV' }).click()]);
+    await expect.poll(() => requested.some((url) => url.endsWith(cvUrl))).toBe(true);
     const res = await api.request.get(cvUrl);
     expect(res.headers()['content-type']).toBe('application/pdf');
   });
