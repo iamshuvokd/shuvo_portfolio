@@ -14,6 +14,8 @@ const schema = z.object({
   /** Comma-separated list of allowed browser origins. */
   CORS_ORIGINS: z.string().default('http://localhost:8080'),
   MAX_UPLOAD_MB: z.coerce.number().positive().default(8),
+  /** Number of reverse proxies in front of the API (gateway = 1). Needed so rate limits see the real visitor IP. */
+  TRUST_PROXY: z.coerce.number().int().min(0).max(5).default(1),
   /** Max admin login attempts per IP per 15 min. Keep low in production; raised for automated tests. */
   LOGIN_RATE_LIMIT: z.coerce.number().int().positive().default(10),
   /** Max public read requests (content, media...) per IP per minute. Health checks and the live stream are exempt. */

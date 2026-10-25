@@ -32,3 +32,9 @@ dist-ssr
 e2e/test-results/
 e2e/playwright-report/
 frontend/design/.og-image.raw.png
+
+# Deployment
+deploy/.env
+deploy/.last-good-tag
+e2e/smoke-report/
+backend/coverage/

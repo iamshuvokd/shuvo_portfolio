@@ -13,7 +13,7 @@ export function createApp() {
   const app = express();
 
   // Behind a reverse proxy (nginx, Render, Fly...) the real client IP is needed for rate limiting.
-  if (env.isProd) app.set('trust proxy', 1);
+  if (env.isProd) app.set('trust proxy', env.TRUST_PROXY);
 
   app.disable('x-powered-by');
   // Media is embedded by the frontend, which may live on another origin.

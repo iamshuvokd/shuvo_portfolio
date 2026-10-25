@@ -7,16 +7,25 @@
     "dev": "concurrently -k -n api,web -c cyan,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "npm --prefix backend run dev",
-    "redis": "docker compose up -d redis",
+    "redis": "docker compose -f docker-compose.dev.yml up -d redis",
     "build": "npm --prefix backend run build && npm --prefix frontend run build",
     "lint": "npm --prefix frontend run lint",
-    "typecheck": "npm --prefix backend run typecheck",
-    "install:all": "npm install && npm --prefix frontend install && npm --prefix backend install && npm --prefix e2e install",
+    "typecheck": "npm --prefix frontend exec tsc -- --noEmit -p tsconfig.app.json && npm --prefix backend run typecheck",
+    "test": "npm --prefix backend test",
     "test:e2e": "npm --prefix e2e test",
     "test:e2e:ui": "npm --prefix e2e run test:ui",
-    "og:image": "npm --prefix frontend run og:image"
+    "test:smoke": "npm --prefix e2e run test:smoke",
+    "check": "npm run lint && npm run typecheck && npm test && npm run test:e2e",
+    "prod:local": "docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build",
+    "prod:local:down": "docker compose -f deploy/docker-compose.yml --env-file deploy/.env down",
+    "og:image": "npm --prefix frontend run og:image",
+    "images": "npm --prefix frontend run images",
+    "install:all": "npm install && npm --prefix frontend install && npm --prefix backend install && npm --prefix e2e install"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
