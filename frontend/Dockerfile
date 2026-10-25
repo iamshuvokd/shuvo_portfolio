@@ -19,7 +19,7 @@ ENV VITE_API_URL=$VITE_API_URL SITE_URL=$SITE_URL
 RUN npm run build && npm run check:size
 
 # ---- serve ---------------------------------------------------------------------------------
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 COPY frontend/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY frontend/nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY --from=build /app/frontend/dist /usr/share/nginx/html
