@@ -1,3 +1,11 @@
+# Trust X-Forwarded-For from private networks, so that when another reverse proxy sits in front of this gateway
+# (shared-server setups) the real visitor IP is preserved. Harmless when this gateway is the only proxy.
+{
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
 # {$SITE_ADDRESS::80} = the SITE_ADDRESS environment variable, defaulting to ":80" (plain HTTP).
 # Put a real domain there (e.g. example.com) and Caddy fetches and renews HTTPS certificates by itself.
 {$SITE_ADDRESS::80} {
