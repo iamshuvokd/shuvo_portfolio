@@ -48,11 +48,11 @@ backend/    Express + TypeScript + Redis; routes → services → Redis (Dockerf
 shared/     default-content.json: the seed and the offline fallback
 e2e/        Playwright: full suite + post-deploy smoke tests
 deploy/     production docker-compose, Caddyfile (HTTPS), deploy.sh (with rollback)
-docs/       ARCHITECTURE.md · CICD.md
+docs/       PROJECT-OVERVIEW.md (start here) · ARCHITECTURE.md · CICD.md
 .github/    CI, CD, Dependabot, PR template, CODEOWNERS
 ```
 
-Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how the pieces fit and where to make common changes.
+New here? Start with [`docs/PROJECT-OVERVIEW.md`](docs/PROJECT-OVERVIEW.md). Then read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how the pieces fit and where to make common changes.
 
 ## Editing content
 
